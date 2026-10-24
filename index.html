@@ -68,14 +68,14 @@ footer{border-top:1px solid var(--text);padding:14px 0 24px}#status{margin:0;col
   <p id="errorPreserved" class="preserved"></p>
   <p id="errorAction"></p>
 </div>
-<header><h1>TERMINAL PERSONNAGE <span id="dirty"></span></h1><span class="dim">local / v1.3</span></header>
+<header><h1>SHADOWRUN-TERMINAL <span id="dirty"></span></h1><span class="dim">local / v0.1</span></header>
 <nav aria-label="Fichiers">
-  <button id="export">[ exporter.json ]</button><button id="import">[ importer.json ]</button><button id="reset">[ réinitialiser ]</button>
+  <button id="export">[ exporter fiche json ]</button><button id="import">[ importer fiche json ]</button><button id="reset">[ réinitialiser ]</button>
   <input id="file" type="file" accept=".json,application/json" hidden>
 </nav>
 <div class="tabs" role="tablist" aria-label="Vue de la fiche">
-  <button id="previewTab" role="tab" aria-selected="true" aria-controls="preview">Aperçu</button>
-  <button id="editTab" role="tab" aria-selected="false" aria-controls="editor" tabindex="-1">Édition</button>
+  <button id="previewTab" role="tab" aria-selected="true" aria-controls="preview">//VIEW//</button>
+  <button id="editTab" role="tab" aria-selected="false" aria-controls="editor" tabindex="-1">//CONFIG//</button>
 </div>
 <div id="sheetViews">
 <div id="preview" class="panel" role="tabpanel" aria-labelledby="previewTab" tabindex="0"></div>
@@ -145,7 +145,7 @@ function cell(label,node,className='') {
 function buildLayout(container,prefix,editable) {
   container.replaceChildren();
   const anarchy = el('div','','anarchy-bar'), label = el('div');
-  const title = el('h2','Points d’Anarchy'); title.id = prefix + 'AnarchyTitle';
+  const title = el('h2','Anarchy pts.'); title.id = prefix + 'AnarchyTitle';
   anarchy.setAttribute('role','group'); anarchy.setAttribute('aria-labelledby',title.id);
   label.append(title,el('p','Relancer, Avantage, Flashback'));
   const value = el('div'); value.id = prefix + 'Anarchy';
