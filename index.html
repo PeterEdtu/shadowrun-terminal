@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>//CHARACTER TERMINAL//</title>
+<title>//SHADOWRUN-TERMINAL//</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <style>
 /* All theme colors are defined here. */
@@ -581,12 +581,12 @@ footer {
     </div>
     <header>
       <h1>
-        CHARACTER-TERMINAL
+        SHADOWRUN-TERMINAL
         <span id="dirty">
         </span>
       </h1>
       <span class="dim">
-        local / v0.1
+        local / v0.2
       </span>
     </header>
     <nav aria-label="Fichiers">
@@ -636,7 +636,7 @@ footer {
           <label for="riskCount">Dés convertis en risque<input id="riskCount" type="number" min="0" max="0" step="1" value="0"></label>
         </div>
         <p id="dicePool" aria-live="polite"></p>
-        <p class="dim">Dés de risque : 5–6 = 2 succès ; 1–2 = complication, quel que soit l’état. Ils remplacent des dés ordinaires.</p>
+        <p class="dim">Dés de risque : 5–6 = 2 succès ; 1–2 = complication, quel que soit l’état. Ils remplacent des dés ordinaires. Complications finales = dés de risque sur 1–2 − RR de la compétence ou spécialité (minimum 0 ; attribut seul : RR 0).</p>
         <p id="diceWarning" role="status"></p>
         <button id="rollDice" type="button">[ lancer les D6 ]</button>
         <p id="diceSummary" role="status" aria-live="polite">Aucun lancer.</p>
@@ -999,7 +999,7 @@ function clearRollHistory() {
   $('rollHistoryEmpty').hidden = false;
   $('clearRollHistory').disabled = true;
 }
-function logRoll(source, state, total, risk, successes, glitches, faces) {
+function logRoll(source, state, total, risk, successes, glitches, faces, rawGlitches, rr) {
   const history = $('rollHistory');
   const entry = el('p', '', 'roll-log-entry');
   entry.append(
@@ -1007,6 +1007,7 @@ function logRoll(source, state, total, risk, successes, glitches, faces) {
       ' | ' + state + ' | ' + total + ' D6 (' + risk + ' risque)\n',
     el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
     ' | Complications : ', el('strong', glitches, 'roll-complications'),
+    ' (' + rawGlitches + ' brutes − RR ' + rr + ', minimum 0)',
     '\nDés : ' + faces.join(' ') + ' (R = risque)'
   );
   if (history.firstElementChild) history.firstElementChild.before(entry);
@@ -1033,7 +1034,7 @@ function refreshDice(clearResult = false) {
   character.skills.forEach((item, index) => {
     const add = (entry, key, specialty) => {
       const label = (item.name || 'Sans nom') + (specialty ? ' / ' + (entry.name || 'Sans nom') : '');
-      const option = el('option', label + ' — RD ' + rd(item, entry, specialty));
+      const option = el('option', label + ' — RD ' + rd(item, entry, specialty) + ' · RR ' + entry.rr);
       option.value = key;
       $('diceSkill').append(option);
       choices.push(key);
@@ -1105,6 +1106,9 @@ function rollDice() {
     $('diceResults').append(die);
   }
   const {skill, specialty} = selectedDiceSkill();
+  const rr = $('diceMode').value === 'attribute' ? 0 : (specialty || skill).rr;
+  const rawGlitches = glitches;
+  glitches = Math.max(0, rawGlitches - rr);
   const source = $('diceMode').value === 'attribute' ? $('diceAttribute').value : (skill.name || 'Sans nom') + (specialty ? ' / ' + (specialty.name || 'Sans nom') : '') + ' (RD)';
   const stateLabel = {standard: 'Standard', advantage: 'Avantage', disadvantage: 'Désavantage'}[state];
   $('diceSummary').replaceChildren(
@@ -1112,9 +1116,10 @@ function rollDice() {
     el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
     ' — COMPLICATION / GLITCH : ',
     el('strong', glitches, 'roll-complications'),
-    glitches ? ' dé(s) de risque sur 1–2.' : ' — Aucune complication.'
+    ' (' + rawGlitches + ' brutes − RR ' + rr + ', minimum 0)',
+    glitches ? ' — Complications restantes.' : ' — Aucune complication restante.'
   );
-  logRoll(source, stateLabel, total, risk, successes, glitches, faces);
+  logRoll(source, stateLabel, total, risk, successes, glitches, faces, rawGlitches, rr);
 }
 // --- Mission journal ---
 function renderMissions() {
