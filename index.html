@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>//SHADOWRUN TERMINAL//</title>
+<title>//SHADOWRUN-TERMINAL//</title>
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <style>
 /* All theme colors are defined here. */
 :root {
@@ -92,6 +93,7 @@ nav button {
 }
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   border-bottom: 1px solid var(--line)
 }
@@ -532,6 +534,27 @@ footer {
 @media (max-width: 540px) {
   .tabs button { min-width: 0; padding: 10px 6px; font-size: 12px; }
 }
+/* Dice use labels as well as color to distinguish successes and risk. */
+.dice-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.dice-controls label { display: grid; gap: 8px; min-width: 0; }
+.dice-controls select, .dice-controls input { width: 100%; min-width: 0; }
+.dice-results { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.die { box-sizing: border-box; flex: 0 0 90px; width: 90px; height: 90px; border: 1px solid var(--line); padding: 8px 4px; text-align: center; }
+.die strong { display: block; font-size: 24px; }
+.die small { display: block; font-size: 11px; line-height: 16px; }
+.die.glitch small:last-child { font-size: 10px; }
+.die.risk { color: #ffb775; border-color: #ffb775; }
+.die.success { color: #79e2a0; border-color: #79e2a0; box-shadow: inset 0 0 12px #79e2a044; }
+.roll-success { color: #79e2a0; }
+.roll-zero { color: #ffb775; }
+.roll-complications { color: #ff806f; }
+.die.glitch { border-color: #ff806f; box-shadow: inset 0 0 0 1px #ff806f; }
+#diceSummary { white-space: pre-line; overflow-wrap: anywhere; }
+#diceWarning { color: #ffb775; }
+.roll-log { max-height: 320px; overflow-y: auto; border: 1px solid var(--line); padding: 12px; margin-top: 12px; }
+.roll-log-entry { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere; }
+.roll-log-entry:last-child { border-bottom: 0; }
+@media (max-width: 480px) { .dice-controls { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -583,6 +606,7 @@ footer {
         //CONFIG//
       </button>
       <button id="missionsTab" role="tab" aria-selected="false" aria-controls="missions" tabindex="-1">//MISSIONS//</button>
+      <button id="diceTab" role="tab" aria-selected="false" aria-controls="dice" tabindex="-1">//ROLL//</button>
     </div>
     <div id="sheetViews">
       <div id="preview" class="panel" role="tabpanel" aria-labelledby="previewTab" tabindex="0">
@@ -591,6 +615,40 @@ footer {
       </div>
       <div id="missions" class="panel" role="tabpanel" aria-labelledby="missionsTab" hidden>
       </div>
+    <div id="dice" class="panel" role="tabpanel" aria-labelledby="diceTab" hidden>
+      <section aria-labelledby="diceTitle">
+        <h2 id="diceTitle">LANCER LES DÉS</h2>
+        <div class="dice-controls">
+          <label for="diceMode">Lancer avec<select id="diceMode">
+            <option value="skill">Compétence — RD</option>
+            <option value="attribute">Attribut seul</option>
+          </select></label>
+          <label id="diceAttributeField" for="diceAttribute" hidden>Attribut<select id="diceAttribute"></select></label>
+          <label id="diceSkillField" for="diceSkill">Compétence<select id="diceSkill"></select></label>
+          <label for="diceState">État du lancer<select id="diceState">
+            <option value="standard">Standard — succès sur 5–6</option>
+            <option value="advantage">Avantage — succès sur 4–6</option>
+            <option value="disadvantage">Désavantage — succès sur 6</option>
+          </select></label>
+          <label for="riskCount">Dés convertis en risque<input id="riskCount" type="number" min="0" max="0" step="1" value="0"></label>
+        </div>
+        <p id="dicePool" aria-live="polite"></p>
+        <p class="dim">Dés de risque : 5–6 = 2 succès ; 1–2 = complication, quel que soit l’état. Ils remplacent des dés ordinaires.</p>
+        <p id="diceWarning" role="status"></p>
+        <button id="rollDice" type="button">[ lancer les D6 ]</button>
+        <p id="diceSummary" role="status" aria-live="polite">Aucun lancer.</p>
+        <div id="diceResults" class="dice-results" aria-label="Résultats des dés"></div>
+      </section>
+      <section aria-labelledby="rollHistoryTitle">
+        <div class="section-title">
+          <h2 id="rollHistoryTitle">// LOGS //</h2>
+          <button id="clearRollHistory" type="button">[ effacer les logs ]</button>
+        </div>
+        <p class="dim">100 derniers lancers de la session · non enregistrés dans la fiche.</p>
+        <p id="rollHistoryEmpty" class="dim">&gt; En attente d’un lancer.</p>
+        <div id="rollHistory" class="roll-log" role="region" aria-labelledby="rollHistoryTitle" tabindex="0" hidden></div>
+      </section>
+    </div>
     </div>
     <footer>
       <p id="status" role="status" aria-live="polite">
@@ -900,13 +958,14 @@ function renderPreview() {
   previewStale = false;
 }
 // --- Tab navigation ---
-const tabs = [$('previewTab'), $('editTab'), $('missionsTab')];
+const tabs = [$('previewTab'), $('editTab'), $('missionsTab'), $('diceTab')];
 function showTab(index) {
   tabs.forEach((tab, i) => {
     tab.setAttribute('aria-selected', String(i === index));
     tab.tabIndex = i === index ? 0 : -1;
     $(tab.getAttribute('aria-controls')).hidden = i !== index;
   });
+  if (index === 3) refreshDice();
   if (index === 0 && previewStale) renderPreview();
 }
 tabs.forEach((tab, index) => {
@@ -924,6 +983,133 @@ tabs.forEach((tab, index) => {
     }
   };
 });
+// --- Dice roller: temporary play state, never part of character JSON. ---
+const MAX_DICE = 1000;
+const MAX_ROLL_HISTORY = 100;
+// History lives only in this panel's DOM, never in character or browser storage.
+function clearRollHistory() {
+  $('rollHistory').replaceChildren();
+  $('rollHistory').hidden = true;
+  $('rollHistoryEmpty').hidden = false;
+  $('clearRollHistory').disabled = true;
+}
+function logRoll(source, state, total, risk, successes, glitches, faces) {
+  const history = $('rollHistory');
+  const entry = el('p', '', 'roll-log-entry');
+  entry.append(
+    '> [' + new Date().toLocaleTimeString('fr-FR', {hour12: false}) + '] ' + source +
+      ' | ' + state + ' | ' + total + ' D6 (' + risk + ' risque)\n',
+    el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
+    ' | Complications : ', el('strong', glitches, 'roll-complications'),
+    '\nDés : ' + faces.join(' ') + ' (R = risque)'
+  );
+  if (history.firstElementChild) history.firstElementChild.before(entry);
+  else history.append(entry);
+  if (history.children.length > MAX_ROLL_HISTORY) history.lastElementChild.remove();
+  history.hidden = false;
+  $('rollHistoryEmpty').hidden = true;
+  $('clearRollHistory').disabled = false;
+  history.scrollTop = 0;
+}
+
+function refreshDice(clearResult = false) {
+  const attribute = $('diceAttribute').value;
+  const skill = $('diceSkill').value;
+  $('diceAttribute').replaceChildren();
+  for (const name of Object.keys(attributes)) {
+    const option = el('option', name + ' — ' + character.stats[name]);
+    option.value = name;
+    $('diceAttribute').append(option);
+  }
+  $('diceAttribute').value = Object.hasOwn(attributes, attribute) ? attribute : 'FORCE';
+  $('diceSkill').replaceChildren();
+  const choices = [];
+  character.skills.forEach((item, index) => {
+    const add = (entry, key, specialty) => {
+      const label = (item.name || 'Sans nom') + (specialty ? ' / ' + (entry.name || 'Sans nom') : '');
+      const option = el('option', label + ' — RD ' + rd(item, entry, specialty));
+      option.value = key;
+      $('diceSkill').append(option);
+      choices.push(key);
+    };
+    add(item, String(index), false);
+    item.specialties.forEach((entry, subIndex) => add(entry, index + ':' + subIndex, true));
+  });
+  $('diceSkill').value = choices.includes(skill) ? skill : (choices[0] || '');
+  if (clearResult) {
+    clearRollHistory();
+    $('diceResults').replaceChildren();
+    $('diceSummary').textContent = 'Aucun lancer.';
+  }
+  updateDicePool();
+}
+function selectedDiceSkill() {
+  const [index, subIndex] = $('diceSkill').value.split(':');
+  const skill = character.skills[Number(index)];
+  const specialty = subIndex === undefined ? null : skill?.specialties[Number(subIndex)];
+  return {skill, specialty};
+}
+function dicePool() {
+  if ($('diceMode').value === 'attribute') return character.stats[$('diceAttribute').value] || 0;
+  const {skill, specialty} = selectedDiceSkill();
+  return skill ? rd(skill, specialty || skill, Boolean(specialty)) : 0;
+}
+function updateDicePool() {
+  const attributeOnly = $('diceMode').value === 'attribute';
+  $('diceAttributeField').hidden = !attributeOnly;
+  $('diceSkillField').hidden = attributeOnly;
+  const total = dicePool();
+  const rawRisk = Number($('riskCount').value);
+  const risk = Math.min(total, Math.max(0, Number.isFinite(rawRisk) ? Math.floor(rawRisk) : 0));
+  $('riskCount').value = String(risk);
+  $('riskCount').max = String(total);
+  $('dicePool').textContent = 'Réserve : ' + total + ' D6 = ' + (total - risk) + ' ordinaires + ' + risk + ' de risque';
+  $('diceWarning').textContent = !total ? 'Ajoutez une compétence dans //CONFIG// pour lancer.' : total > MAX_DICE ? 'Réserve trop grande : maximum ' + MAX_DICE + ' dés par lancer. Réduisez l’indice de compétence.' : '';
+  $('rollDice').disabled = !total || total > MAX_DICE;
+  return {total, risk};
+}
+function scoreDie(face, risk, state) {
+  const threshold = state === 'advantage' ? 4 : state === 'disadvantage' ? 6 : 5;
+  return {successes: risk ? (face >= 5 ? 2 : 0) : (face >= threshold ? 1 : 0), glitch: risk && face <= 2};
+}
+function bindDiceControls() {
+  $('diceMode').onchange = updateDicePool;
+  $('diceAttribute').onchange = updateDicePool;
+  $('diceSkill').onchange = updateDicePool;
+  $('riskCount').oninput = updateDicePool;
+  $('rollDice').onclick = rollDice;
+  $('clearRollHistory').onclick = clearRollHistory;
+}
+function rollDice() {
+  const {total, risk} = updateDicePool();
+  if (!total || total > MAX_DICE) return;
+  const state = $('diceState').value;
+  let successes = 0, glitches = 0;
+  const faces = [];
+  $('diceResults').replaceChildren();
+  for (let i = 0; i < total; i++) {
+    const isRisk = i >= total - risk;
+    const face = Math.floor(Math.random() * 6) + 1;
+    faces.push((isRisk ? 'R:' : '') + face);
+    const result = scoreDie(face, isRisk, state);
+    successes += result.successes;
+    glitches += Number(result.glitch);
+    const die = el('div', '', 'die' + (isRisk ? ' risk' : '') + (result.successes ? ' success' : '') + (result.glitch ? ' glitch' : ''));
+    die.append(el('small', isRisk ? 'RISQUE' : 'D6'), el('strong', face), el('small', result.glitch ? 'Complication' : result.successes ? '+' + result.successes + ' succès' : '0 succès'));
+    $('diceResults').append(die);
+  }
+  const {skill, specialty} = selectedDiceSkill();
+  const source = $('diceMode').value === 'attribute' ? $('diceAttribute').value : (skill.name || 'Sans nom') + (specialty ? ' / ' + (specialty.name || 'Sans nom') : '') + ' (RD)';
+  const stateLabel = {standard: 'Standard', advantage: 'Avantage', disadvantage: 'Désavantage'}[state];
+  $('diceSummary').replaceChildren(
+    'Dernier lancer : ' + source + ' — ' + total + ' D6 (' + risk + ' risque) — ' + stateLabel + '\n',
+    el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
+    ' — COMPLICATION / GLITCH : ',
+    el('strong', glitches, 'roll-complications'),
+    glitches ? ' dé(s) de risque sur 1–2.' : ' — Aucune complication.'
+  );
+  logRoll(source, stateLabel, total, risk, successes, glitches, faces);
+}
 // --- Mission journal ---
 function renderMissions() {
   const panel = $('missions');
@@ -1389,9 +1575,14 @@ function prepareImportedSheet(candidate) {
   const preview = $('preview').cloneNode(false);
   const editor = $('editor').cloneNode(false);
   const missions = $('missions').cloneNode(false);
+  const dice = $('dice').cloneNode(true);
+  // cloneNode does not preserve all current form selections or event handlers.
+  for (const id of ['diceMode', 'diceAttribute', 'diceSkill', 'diceState', 'riskCount']) {
+    dice.querySelector('#' + id).value = $(id).value;
+  }
   const dirty = el('span');
   dirty.id = 'dirty';
-  root.append(preview, editor, missions, dirty);
+  root.append(preview, editor, missions, dice, dirty);
   try {
     renderRoot = root;
     character = candidate;
@@ -1399,10 +1590,13 @@ function prepareImportedSheet(candidate) {
     buildLayout(preview, 'view', false);
     buildLayout(editor, 'edit', true);
     render();
+    bindDiceControls();
+    refreshDice(true);
     return {
       preview,
       editor,
       missions,
+      dice,
       updates: rdUpdates
     };
   } finally {
@@ -1416,7 +1610,7 @@ function prepareImportedSheet(candidate) {
 function applyImportedSheet(candidate) {
   const prepared = prepareImportedSheet(candidate);
   // One DOM replacement commits the fully constructed views.
-  $('sheetViews').replaceChildren(prepared.preview, prepared.editor, prepared.missions);
+  $('sheetViews').replaceChildren(prepared.preview, prepared.editor, prepared.missions, prepared.dice);
   character = candidate;
   changed = false;
   rdUpdates = prepared.updates;
@@ -1503,6 +1697,7 @@ $('reset').onclick = () => {
   character = defaults();
   changed = false;
   render();
+  refreshDice(true);
   status('fiche réinitialisée');
 };
 window.addEventListener('beforeunload', event => {
@@ -1514,6 +1709,9 @@ window.addEventListener('beforeunload', event => {
 buildLayout($('preview'), 'view', false);
 buildLayout($('editor'), 'edit', true);
 render();
+bindDiceControls();
+clearRollHistory();
+refreshDice();
 </script>
 </body>
 </html>
