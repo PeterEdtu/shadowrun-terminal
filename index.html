@@ -3,552 +3,1431 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Terminal personnage</title>
+<title>//SHADOWRUN TERMINAL//</title>
 <style>
 /* All theme colors are defined here. */
-:root{color-scheme:dark;--bg:#131016;--field:#1c1622;--text:#d0c3db;--accent:#ca9aff;--dim:#a291af;--line:#493653;--error:#ffa5b5}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Courier New",monospace}
-main{max-width:1100px;margin:24px auto;padding:0 20px}
-header,.section-title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-header{border-bottom:1px solid var(--text);padding-bottom:10px}
-h1,h2{margin:0;font-size:14px;font-weight:normal;color:var(--accent)}.dim{color:var(--dim)}
-button,input,select,textarea{font:inherit;border-radius:0}
-button{min-height:44px;color:var(--accent);background:transparent;border:1px solid var(--line);padding:6px 10px;cursor:pointer;touch-action:manipulation}
-button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-nav{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 0}nav button{border:0;padding:8px 0}
-.tabs{display:flex;gap:8px;border-bottom:1px solid var(--line)}.tabs button{border-bottom:0;padding:10px 22px}
-.tabs button[aria-selected=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-section{padding:24px 0}.panel>section+section,.paired,.paired+section{border-top:1px solid var(--line)}.section-title{margin-bottom:22px}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.stat-heading{display:flex;justify-content:space-between;margin-bottom:8px}
-output,.value{color:var(--accent)}.points{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.point{display:grid;place-items:center;min-width:0;padding:0}.point:before{content:"";width:11px;height:11px;border:1px solid var(--accent)}
-.point.filled:before{background:var(--accent)}.point[aria-checked=true]{border-color:var(--accent)}
-.table-head,.skill-row{display:grid;grid-template-columns:minmax(140px,1fr) 76px 88px 48px 140px 44px;gap:12px;align-items:center}
-.table-head{padding:0 0 10px;color:var(--dim);font-size:12px}.table-head span:not(:first-child){text-align:center}
-.skill-block{border-top:1px solid var(--line);padding:14px 0}.skill-row+.skill-row{margin-top:14px}.cell{min-width:0;text-align:center}
-input,select,textarea{width:100%;min-width:0;min-height:44px;padding:8px;border:1px solid var(--line);background:var(--field);color:var(--text);font-size:16px}
-textarea{min-height:180px;resize:vertical;line-height:1.6}input[type=number]{text-align:center}
-.skill-name{min-width:0;overflow-wrap:anywhere}.specialty .skill-name{padding-left:16px}.specialty input[type=text],.specialty .skill-name{color:var(--dim)}
-.counter{display:grid;grid-template-columns:44px minmax(0,1fr) 44px}.counter input{padding:2px;border-left:0;border-right:0;appearance:textfield}
-.counter input::-webkit-inner-spin-button{appearance:none}.counter button{padding:0}.remove{color:var(--error);padding:0;width:44px}
-.row-limit{margin:8px 0;color:var(--dim);font-size:12px}.row-limit.reached{color:var(--error)}
-.readout{min-height:44px;display:grid;place-items:center}.mobile-label{display:none}.add-specialty{margin-top:10px;font-size:12px;border:0}
-.paired{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}.paired>section+section{padding-left:28px;border-left:1px solid var(--line)}
-.list-row{display:grid;grid-template-columns:24px minmax(0,1fr) 44px;gap:8px;align-items:center;margin-bottom:10px}.list-row>span{color:var(--dim);font-size:12px}
-.text-list{list-style:none;margin:0;padding:0}.text-list li{display:flex;gap:18px;padding:10px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.text-list .number{color:var(--dim);flex-shrink:0}
-.notes-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}.wound-rule{margin:0 0 20px;color:var(--dim)}
-.wound-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
-.wound-label strong{font-weight:normal}.wound-label small{display:block;color:var(--dim);font-size:12px}.limit{display:block;text-align:center;color:var(--dim);font-size:12px;margin-top:4px}
-.wound-value{color:var(--accent);font-size:20px}.anarchy-bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
-.anarchy-bar p{margin:5px 0 0;color:var(--dim);font-size:12px}.anarchy-controls{width:150px;flex-shrink:0}.anarchy-value{color:var(--accent);font-size:24px;white-space:nowrap}
-footer{border-top:1px solid var(--text);padding:14px 0 24px}#status{margin:0;color:var(--accent);overflow-wrap:anywhere}#status.error{color:var(--error)}
-.preview-points{display:flex;gap:10px;padding:12px 0}.preview-points span{width:13px;height:13px;border:1px solid var(--accent)}.preview-points .filled{background:var(--accent)}
-#preview .table-head,#preview .skill-row{grid-template-columns:minmax(140px,1fr) 76px 88px 60px 76px}
-@media(hover:hover){button:not(:disabled):hover{border-color:var(--accent);background:var(--field)}}
-@media(max-width:850px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.table-head{display:none}.skill-row{grid-template-columns:76px 88px minmax(40px,1fr) 140px 44px;gap:10px}.skill-name{grid-column:1/-1}.mobile-label{display:block;color:var(--dim);font-size:11px;margin-bottom:6px}.remove{align-self:end}#preview .skill-row{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(max-width:680px){.paired{grid-template-columns:minmax(0,1fr);gap:0}.paired>section+section{padding-left:0;border-left:0;border-top:1px solid var(--line)}}
-@media(max-width:540px){main{margin:16px auto;padding:0 14px}.stats{grid-template-columns:minmax(0,1fr);gap:20px}.skill-row{grid-template-columns:repeat(3,minmax(0,1fr))}.rr-cell{grid-column:1/3}.remove{justify-self:end}.specialty .skill-name{padding-left:0}#preview .rr-cell{grid-column:auto}.tabs button{flex:1;padding:10px}.wound-row{grid-template-columns:130px minmax(0,1fr);gap:12px}.anarchy-bar{flex-wrap:wrap;gap:12px}}
+:root {
+  color-scheme: dark;
+  --bg: #131016;
+  --field: #1c1622;
+  --text: #d0c3db;
+  --accent: #ca9aff;
+  --dim: #a291af;
+  --line: #493653;
+  --error: #ffa5b5
+}
+* {
+  box-sizing: border-box
+}
+[hidden] {
+  display: none!important
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.6 "Courier New",
+  monospace
+}
+main {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 20px
+}
+header,
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px
+}
+header {
+  border-bottom: 1px solid var(--text);
+  padding-bottom: 10px
+}
+h1,
+h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--accent)
+}
+.dim {
+  color: var(--dim)
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  border-radius: 0
+}
+button {
+  min-height: 44px;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  cursor: pointer;
+  touch-action: manipulation
+}
+button:disabled {
+  opacity: .4;
+  cursor: default
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 12px 0
+}
+nav button {
+  border: 0;
+  padding: 8px 0
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line)
+}
+.tabs button {
+  border-bottom: 0;
+  padding: 10px 22px
+}
+.tabs button[aria-selected=true] {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent)
+}
+section {
+  padding: 24px 0
+}
+.panel>section+section,
+.paired,
+.paired+section {
+  border-top: 1px solid var(--line)
+}
+.section-title {
+  margin-bottom: 22px
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 24px
+}
+.stat-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px
+}
+output,
+.value {
+  color: var(--accent)
+}
+.points {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 6px
+}
+.point {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 0
+}
+.point:before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--accent)
+}
+.point.filled:before {
+  background: var(--accent)
+}
+.point[aria-checked=true] {
+  border-color: var(--accent)
+}
+.table-head,
+.skill-row {
+  display: grid;
+  grid-template-columns: minmax(140px,1fr) 76px 88px 48px 140px 44px;
+  gap: 12px;
+  align-items: center
+}
+.table-head {
+  padding: 0 0 10px;
+  color: var(--dim);
+  font-size: 12px
+}
+.table-head span:not(:first-child) {
+  text-align: center
+}
+.skill-block {
+  border-top: 1px solid var(--line);
+  padding: 14px 0
+}
+.skill-row+.skill-row {
+  margin-top: 14px
+}
+.cell {
+  min-width: 0;
+  text-align: center
+}
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  background: var(--field);
+  color: var(--text);
+  font-size: 16px
+}
+textarea {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.6
+}
+input[type=number] {
+  text-align: center
+}
+.skill-name {
+  min-width: 0;
+  overflow-wrap: anywhere
+}
+.specialty .skill-name {
+  padding-left: 16px
+}
+.specialty input[type=text],
+.specialty .skill-name {
+  color: var(--dim)
+}
+.counter {
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) 44px
+}
+.counter input {
+  padding: 2px;
+  border-left: 0;
+  border-right: 0;
+  appearance: textfield
+}
+.counter input::-webkit-inner-spin-button {
+  appearance: none
+}
+.counter button {
+  padding: 0
+}
+.remove {
+  color: var(--error);
+  padding: 0;
+  width: 44px
+}
+.row-limit {
+  margin: 8px 0;
+  color: var(--dim);
+  font-size: 12px
+}
+.row-limit.reached {
+  color: var(--error)
+}
+.readout {
+  min-height: 44px;
+  display: grid;
+  place-items: center
+}
+.mobile-label {
+  display: none
+}
+.add-specialty {
+  margin-top: 10px;
+  font-size: 12px;
+  border: 0
+}
+.paired {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 28px
+}
+.paired>section+section {
+  padding-left: 28px;
+  border-left: 1px solid var(--line)
+}
+.list-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) 44px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px
+}
+.list-row>span {
+  color: var(--dim);
+  font-size: 12px
+}
+.text-list {
+  list-style: none;
+  margin: 0;
+  padding: 0
+}
+.text-list li {
+  display: flex;
+  gap: 18px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere
+}
+.text-list .number {
+  color: var(--dim);
+  flex-shrink: 0
+}
+.notes-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0
+}
+.wound-rule {
+  margin: 0 0 20px;
+  color: var(--dim)
+}
+.wound-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0,1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--line)
+}
+.wound-label strong {
+  font-weight: normal
+}
+.wound-label small {
+  display: block;
+  color: var(--dim);
+  font-size: 12px
+}
+.limit {
+  display: block;
+  text-align: center;
+  color: var(--dim);
+  font-size: 12px;
+  margin-top: 4px
+}
+.wound-value {
+  color: var(--accent);
+  font-size: 20px
+}
+.anarchy-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line)
+}
+.anarchy-bar p {
+  margin: 5px 0 0;
+  color: var(--dim);
+  font-size: 12px
+}
+.anarchy-controls {
+  width: 150px;
+  flex-shrink: 0
+}
+.anarchy-value {
+  color: var(--accent);
+  font-size: 24px;
+  white-space: nowrap
+}
+footer {
+  border-top: 1px solid var(--text);
+  padding: 14px 0 24px
+}
+#status {
+  margin: 0;
+  color: var(--accent);
+  overflow-wrap: anywhere
+}
+#status.error {
+  color: var(--error)
+}
+.preview-points {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0
+}
+.preview-points span {
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--accent)
+}
+.preview-points .filled {
+  background: var(--accent)
+}
+#preview .table-head,
+#preview .skill-row {
+  grid-template-columns: minmax(140px,1fr) 76px 88px 60px 76px
+}
+@media(hover:hover) {
+  button:not(:disabled):hover {
+    border-color: var(--accent);
+    background: var(--field)
+  }
+}
+@media(max-width:850px) {
+  .stats {
+    grid-template-columns: repeat(2,minmax(0,1fr))
+  }
+  .table-head {
+    display: none
+  }
+  .skill-row {
+    grid-template-columns: 76px 88px minmax(40px,1fr) 140px 44px;
+    gap: 10px
+  }
+  .skill-name {
+    grid-column: 1/-1
+  }
+  .mobile-label {
+    display: block;
+    color: var(--dim);
+    font-size: 11px;
+    margin-bottom: 6px
+  }
+  .remove {
+    align-self: end
+  }
+  #preview .skill-row {
+    grid-template-columns: repeat(4,minmax(0,1fr))
+  }
+}
+@media(max-width:680px) {
+  .paired {
+    grid-template-columns: minmax(0,1fr);
+    gap: 0
+  }
+  .paired>section+section {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line)
+  }
+}
+@media(max-width:540px) {
+  main {
+    margin: 16px auto;
+    padding: 0 14px
+  }
+  .stats {
+    grid-template-columns: minmax(0,1fr);
+    gap: 20px
+  }
+  .skill-row {
+    grid-template-columns: repeat(3,minmax(0,1fr))
+  }
+  .rr-cell {
+    grid-column: 1/3
+  }
+  .remove {
+    justify-self: end
+  }
+  .specialty .skill-name {
+    padding-left: 0
+  }
+  #preview .rr-cell {
+    grid-column: auto
+  }
+  .tabs button {
+    flex: 1;
+    padding: 10px
+  }
+  .wound-row {
+    grid-template-columns: 130px minmax(0,1fr);
+    gap: 12px
+  }
+  .anarchy-bar {
+    flex-wrap: wrap;
+    gap: 12px
+  }
+}
 /* Import errors remain visible until dismissed or another import starts. */
-.error-banner{margin-bottom:24px;padding:18px;border:2px solid var(--error);border-left-width:6px;background:#2b1722;scroll-margin-top:16px}
-.error-banner:focus{outline:2px solid var(--error);outline-offset:4px}
-.error-banner h2{color:var(--error);font-weight:bold}.error-banner p{margin:10px 0 0}
-.error-banner .preserved{font-weight:bold}.error-banner button{color:var(--error)}
+.error-banner {
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 2px solid var(--error);
+  border-left-width: 6px;
+  background: #2b1722;
+  scroll-margin-top: 16px
+}
+.error-banner:focus {
+  outline: 2px solid var(--error);
+  outline-offset: 4px
+}
+.error-banner h2 {
+  color: var(--error);
+  font-weight: bold
+}
+.error-banner p {
+  margin: 10px 0 0
+}
+.error-banner .preserved {
+  font-weight: bold
+}
+.error-banner button {
+  color: var(--error)
+}
+/* Profile fields on the left, Anarchy resource on the right. */
+.profile-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.profile-fields {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.profile-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: normal;
+}
+.profile-fields textarea {
+  min-height: 96px;
+}
+.profile-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.profile-row .anarchy-bar {
+  align-self: start;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  border: 0;
+}
+@media (max-width: 680px) {
+  .profile-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+.mission-row {
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.mission-row .section-title { margin-bottom: 8px; }
+.mission-description-label { display: block; margin: 16px 0 8px; }
+.mission-row textarea { min-height: 120px; }
+@media (max-width: 540px) {
+  .tabs button { min-width: 0; padding: 10px 6px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
-<main>
-<div id="errorBanner" class="error-banner" role="alert" aria-atomic="true" tabindex="-1"
+  <main>
+    <div id="errorBanner" class="error-banner" role="alert" aria-atomic="true" tabindex="-1"
      aria-labelledby="errorTitle" aria-describedby="errorReason errorPreserved errorAction" hidden>
-  <div class="section-title">
-    <h2 id="errorTitle">IMPORT IMPOSSIBLE</h2>
-    <button id="dismissError" type="button" aria-label="Fermer le message d’erreur">[ fermer ]</button>
-  </div>
-  <p id="errorReason"></p>
-  <p id="errorPreserved" class="preserved"></p>
-  <p id="errorAction"></p>
-</div>
-<header><h1>SHADOWRUN-TERMINAL <span id="dirty"></span></h1><span class="dim">local / v0.1</span></header>
-<nav aria-label="Fichiers">
-  <button id="export">[ exporter fiche json ]</button><button id="import">[ importer fiche json ]</button><button id="reset">[ réinitialiser ]</button>
-  <input id="file" type="file" accept=".json,application/json" hidden>
-</nav>
-<div class="tabs" role="tablist" aria-label="Vue de la fiche">
-  <button id="previewTab" role="tab" aria-selected="true" aria-controls="preview">//VIEW//</button>
-  <button id="editTab" role="tab" aria-selected="false" aria-controls="editor" tabindex="-1">//CONFIG//</button>
-</div>
-<div id="sheetViews">
-<div id="preview" class="panel" role="tabpanel" aria-labelledby="previewTab" tabindex="0"></div>
-<div id="editor" class="panel" role="tabpanel" aria-labelledby="editTab" hidden></div>
-</div>
-<footer><p id="status" role="status" aria-live="polite">&gt; fiche chargée</p></footer>
-</main>
+      <div class="section-title">
+        <h2 id="errorTitle">
+          IMPORT IMPOSSIBLE
+        </h2>
+        <button id="dismissError" type="button" aria-label="Fermer le message d’erreur">
+          [ fermer ]
+        </button>
+      </div>
+      <p id="errorReason">
+      </p>
+      <p id="errorPreserved" class="preserved">
+      </p>
+      <p id="errorAction">
+      </p>
+    </div>
+    <header>
+      <h1>
+        SHADOWRUN-TERMINAL
+        <span id="dirty">
+        </span>
+      </h1>
+      <span class="dim">
+        local / v0.1
+      </span>
+    </header>
+    <nav aria-label="Fichiers">
+      <button id="export">
+        [ exporter fiche json ]
+      </button>
+      <button id="import">
+        [ importer fiche json ]
+      </button>
+      <button id="reset">
+        [ réinitialiser ]
+      </button>
+      <input id="file" type="file" accept=".json,application/json" hidden>
+    </nav>
+    <div class="tabs" role="tablist" aria-label="Vue de la fiche">
+      <button id="previewTab" role="tab" aria-selected="true" aria-controls="preview">
+        //VIEW//
+      </button>
+      <button id="editTab" role="tab" aria-selected="false" aria-controls="editor" tabindex="-1">
+        //CONFIG//
+      </button>
+      <button id="missionsTab" role="tab" aria-selected="false" aria-controls="missions" tabindex="-1">//MISSIONS//</button>
+    </div>
+    <div id="sheetViews">
+      <div id="preview" class="panel" role="tabpanel" aria-labelledby="previewTab" tabindex="0">
+      </div>
+      <div id="editor" class="panel" role="tabpanel" aria-labelledby="editTab" hidden>
+      </div>
+      <div id="missions" class="panel" role="tabpanel" aria-labelledby="missionsTab" hidden>
+      </div>
+    </div>
+    <footer>
+      <p id="status" role="status" aria-live="polite">
+        &gt; fiche chargée
+      </p>
+    </footer>
+  </main>
 <script>
 // During import preparation, lookups target detached elements only.
 let renderRoot = null;
 const $ = id => renderRoot ? renderRoot.querySelector('#' + id) : document.getElementById(id);
-const MAX_LINES = 10, MAX_TEXT = 120, MAX_ANARCHY = 3;
-const MAX_SKILLS = 100, MAX_SPECIALTIES = 10, MAX_FILE_BYTES = 2000000;
-const attributes = {FORCE:'FOR','AGILITÉ':'AGI','VOLONTÉ':'VOL',LOGIQUE:'LOG',CHARISME:'CHA',ANARCHY:'ANA'};
+// --- Configuration and default character data ---
+const MAX_NAME = 120, MAX_DESCRIPTION = 2000;
+const MAX_MISSIONS = 100, MAX_MISSION_DESCRIPTION = 4000;
+const MAX_LINES = 10,
+  MAX_TEXT = 120,
+  MAX_ANARCHY = 3;
+const MAX_SKILLS = 100,
+  MAX_SPECIALTIES = 10,
+  MAX_FILE_BYTES = 2000000;
+const attributes = {
+  FORCE: 'FOR',
+  'AGILITÉ': 'AGI',
+  'VOLONTÉ': 'VOL',
+  LOGIQUE: 'LOG',
+  CHARISME: 'CHA',
+  ANARCHY: 'ANA'
+};
 const seeds = [
-  ['Athlétisme',3,'FORCE','défense à distance','AGILITÉ'],
-  ['Combat rapproché',4,'AGILITÉ','mains nues','AGILITÉ'],
-  ['Furtivité',3,'AGILITÉ'],
-  ['Influence',2,'CHARISME','étiquette','CHARISME'],
-  ['Ingénierie',5,'LOGIQUE','armes contrôlées à distance','LOGIQUE'],
-  ['Perception',2,'LOGIQUE','physique','LOGIQUE'],
-  ['Pilotage',5,'AGILITÉ','drones volants','AGILITÉ'],
-  ['Réseau',2,'CHARISME','corporatiste','CHARISME']
+  ['Athlétisme', 3, 'FORCE', 'défense à distance', 'AGILITÉ'],
+  ['Combat rapproché', 4, 'AGILITÉ', 'mains nues', 'AGILITÉ'],
+  ['Furtivité', 3, 'AGILITÉ'],
+  ['Influence', 2, 'CHARISME', 'étiquette', 'CHARISME'],
+  ['Ingénierie', 5, 'LOGIQUE', 'armes contrôlées à distance', 'LOGIQUE'],
+  ['Perception', 2, 'LOGIQUE', 'physique', 'LOGIQUE'],
+  ['Pilotage', 5, 'AGILITÉ', 'drones volants', 'AGILITÉ'],
+  ['Réseau', 2, 'CHARISME', 'corporatiste', 'CHARISME']
 ];
-const woundTypes = [
-  {key:'light',max:2,name:'Blessures légères',effect:'désavantage pour 1 tour'},
-  {key:'serious',max:1,name:'Blessures graves',effect:'désavantage jusqu’à guérison'},
-  {key:'incapacitating',max:1,name:'Blessures incapacitantes',effect:'immobilisé jusqu’à guérison'}
-];
+const woundTypes = [{
+  key: 'light',
+  max: 2,
+  name: 'Blessures légères',
+  effect: 'désavantage pour 1 tour'
+}, {
+  key: 'serious',
+  max: 1,
+  name: 'Blessures graves',
+  effect: 'désavantage jusqu’à guérison'
+}, {
+  key: 'incapacitating',
+  max: 1,
+  name: 'Blessures incapacitantes',
+  effect: 'immobilisé jusqu’à guérison'
+}];
 const woundRule = 'Blessures : VD contre FOR/VOL/FW + Protection - Seuil: 6 / 9 / 12';
-
 // One data object drives the editor, preview and JSON exports.
 function defaults() {
   return {
-    version:7, anarchyPoints:3,
-    stats:Object.fromEntries(Object.keys(attributes).map(name => [name,1])),
-    skills:seeds.map(([name,index,attribute,specialty,specialtyAttribute]) => ({
-      name,index,attribute,rr:0,
-      specialties:specialty ? [{name:specialty,attribute:specialtyAttribute,rr:0}] : []
+    schema: 'character-sheet',
+    version: 1,
+    missions: [],
+    name: '',
+    physicalDescription: '',
+    anarchyPoints: 3,
+    stats: Object.fromEntries(Object.keys(attributes).map(name => [name, 1])),
+    skills: seeds.map(([name, index, attribute, specialty, specialtyAttribute]) => ({
+      name,
+      index,
+      attribute,
+      rr: 0,
+      specialties: specialty ? [{
+        name: specialty,
+        attribute: specialtyAttribute,
+        rr: 0
+      }] : []
     })),
-    atouts:[], equipment:[], wounds:{light:0,serious:0,incapacitating:0}, notes:''
+    atouts: [],
+    equipment: [],
+    wounds: {
+      light: 0,
+      serious: 0,
+      incapacitating: 0
+    },
+    notes: ''
   };
 }
-let character = defaults(), changed = false, rdUpdates = [];
-function el(tag,text='',className='') {
+let character = defaults(),
+  changed = false,
+  rdUpdates = [];
+let previewStale = false;
+// --- Shared DOM helpers ---
+function el(tag, text = '', className = '') {
   const node = document.createElement(tag);
-  node.textContent = text; node.className = className;
+  node.textContent = text;
+  node.className = className;
   return node;
 }
-function status(message,error=false) {
+function status(message, error = false) {
   $('status').textContent = '> ' + message;
-  $('status').classList.toggle('error',error);
+  $('status').classList.toggle('error', error);
 }
-function edit() {
-  changed = true; $('dirty').textContent = '*';
-  rdUpdates.forEach(update => update());
-  renderPreview(); status('modifié');
+// Hidden previews refresh once when opened; notes do not recalculate skill RD.
+function edit(updateDerived = false, updatePreview = true) {
+  changed = true;
+  $('dirty').textContent = '*';
+  if (updateDerived) rdUpdates.forEach(update => update());
+  if (updatePreview) {
+    previewStale = true;
+    if (!$('preview').hidden) renderPreview();
+  }
+  status('modifié');
 }
-function rd(skill,item,specialty) { return skill.index + character.stats[item.attribute] + (specialty ? 2 : 0); }
-function cell(label,node,className='') {
-  const wrapper = el('div','','cell ' + className);
-  wrapper.append(el('span',label,'mobile-label'),node);
+function rd(skill, item, specialty) {
+  return skill.index + character.stats[item.attribute] + (specialty ? 2 : 0);
+}
+function cell(label, node, className = '') {
+  const wrapper = el('div', '', 'cell ' + className);
+  wrapper.append(el('span', label, 'mobile-label'), node);
   return wrapper;
 }
-
+// --- Sheet layout ---
 // Build matching sections without duplicating the sheet markup.
-function buildLayout(container,prefix,editable) {
+function buildLayout(container, prefix, editable) {
   container.replaceChildren();
-  const anarchy = el('div','','anarchy-bar'), label = el('div');
-  const title = el('h2','Anarchy pts.'); title.id = prefix + 'AnarchyTitle';
-  anarchy.setAttribute('role','group'); anarchy.setAttribute('aria-labelledby',title.id);
-  label.append(title,el('p','Relancer, Avantage, Flashback'));
-  const value = el('div'); value.id = prefix + 'Anarchy';
-  anarchy.append(label,value); container.append(anarchy);
-  function section(parent,key,title) {
-    const node = el('section'), heading = el('div','','section-title'), h = el('h2',title);
-    h.id = prefix + key + 'Title'; node.setAttribute('aria-labelledby',h.id);
-    heading.append(h);
-    const body = el('div'); body.id = prefix + key;
-    node.append(heading,body); parent.append(node);
-    return {heading,body};
+  const profile = el('div', '', 'profile-row');
+  const fields = el('div', '', 'profile-fields');
+  // Identity fields share the top row with the Anarchy resource.
+  for (const [key, caption, multiline, maxLength] of [
+    ['name', 'Name', false, MAX_NAME],
+    ['physicalDescription', 'Description physique', true, MAX_DESCRIPTION]
+  ]) {
+    const field = el('div');
+    const label = el(editable ? 'label' : 'h2', caption, 'profile-label');
+    const value = el(editable ? (multiline ? 'textarea' : 'input') : 'p');
+    value.id = prefix + '-' + key;
+    if (editable) {
+      label.htmlFor = value.id;
+      if (!multiline) value.type = 'text';
+      value.maxLength = maxLength;
+      value.oninput = () => {
+        character[key] = value.value;
+        edit();
+      };
+    } else {
+      value.className = 'profile-text';
+    }
+    field.append(label, value);
+    fields.append(field);
   }
-  const stats = section(container,'Stats','01 — CARACTÉRISTIQUES'); stats.body.className = 'stats';
-  if (!editable) stats.heading.append(el('span','lecture seule','dim'));
-  const skills = section(container,'Skills','02 — COMPÉTENCES');
-  const head = el('div','','table-head'); head.setAttribute('aria-hidden','true');
-  ['COMPÉTENCE','INDICE','+ ATTR.','= RD','RR',...(editable ? [''] : [])].forEach(t => head.append(el('span',t)));
+  profile.append(fields);
+  const anarchy = el('div', '', 'anarchy-bar'),
+    label = el('div');
+  const title = el('h2', 'Anarchy pts.');
+  title.id = prefix + 'AnarchyTitle';
+  anarchy.setAttribute('role', 'group');
+  anarchy.setAttribute('aria-labelledby', title.id);
+  label.append(title, el('p', 'Relancer, Avantage, Flashback'));
+  const value = el('div');
+  value.id = prefix + 'Anarchy';
+  anarchy.append(label, value);
+  profile.append(anarchy);
+  container.append(profile);
+  function section(parent, key, title) {
+    const node = el('section'),
+      heading = el('div', '', 'section-title'),
+      h = el('h2', title);
+    h.id = prefix + key + 'Title';
+    node.setAttribute('aria-labelledby', h.id);
+    heading.append(h);
+    const body = el('div');
+    body.id = prefix + key;
+    node.append(heading, body);
+    parent.append(node);
+    return {
+      heading,
+      body
+    };
+  }
+  const stats = section(container, 'Stats', '01 — CARACTÉRISTIQUES');
+  stats.body.className = 'stats';
+  if (!editable) stats.heading.append(el('span', 'lecture seule', 'dim'));
+  const skills = section(container, 'Skills', '02 — COMPÉTENCES');
+  const head = el('div', '', 'table-head');
+  head.setAttribute('aria-hidden', 'true');
+  ['COMPÉTENCE', 'INDICE', '+ ATTR.', '= RD', 'RR', ...(editable ? [''] : [])].forEach(t => head.append(el('span', t)));
   skills.body.before(head);
   if (editable) {
-    const count = el('span','','dim'); count.id = 'skillCount';
-    skills.heading.querySelector('h2').append(' ',count);
-    const limit = el('p','','row-limit'); limit.id = 'skillLimit';
-    limit.setAttribute('aria-live','polite'); skills.body.before(limit);
-    const add = el('button','[ + compétence ]'); add.id = 'addSkill';
-    add.setAttribute('aria-describedby','skillLimit');
+    const count = el('span', '', 'dim');
+    count.id = 'skillCount';
+    skills.heading.querySelector('h2').append(' ', count);
+    const limit = el('p', '', 'row-limit');
+    limit.id = 'skillLimit';
+    limit.setAttribute('aria-live', 'polite');
+    skills.body.before(limit);
+    const add = el('button', '[ + compétence ]');
+    add.id = 'addSkill';
+    add.setAttribute('aria-describedby', 'skillLimit');
     add.onclick = () => {
       if (character.skills.length >= MAX_SKILLS) return;
-      character.skills.push({name:'',index:0,attribute:'FORCE',rr:0,specialties:[]});
-      renderSkills(); edit(); $('editSkills').lastElementChild.querySelector('input').focus();
+      character.skills.push({
+        name: '',
+        index: 0,
+        attribute: 'FORCE',
+        rr: 0,
+        specialties: []
+      });
+      renderSkills();
+      edit();
+      $('editSkills').lastElementChild.querySelector('input').focus();
     };
     skills.heading.append(add);
   }
-  const pair = el('div','','paired'); container.append(pair);
-  for (const [key,title] of [['atouts','03 — ATOUTS'],['equipment','04 — ARMES / ÉQUIPEMENTS']]) {
-    const list = section(pair,key,title);
+  const pair = el('div', '', 'paired');
+  container.append(pair);
+  for (const [key, title] of [['atouts', '03 — ATOUTS'], ['equipment', '04 — ARMES / ÉQUIPEMENTS']]) {
+    const list = section(pair, key, title);
     if (editable) {
-      const count = el('span','','dim'); count.id = key + 'Count';
-      list.heading.querySelector('h2').append(' ',count);
-      const add = el('button',key === 'atouts' ? '[ + atout ]' : '[ + équipement ]'); add.id = key + 'Add';
+      const count = el('span', '', 'dim');
+      count.id = key + 'Count';
+      list.heading.querySelector('h2').append(' ', count);
+      const add = el('button', key === 'atouts' ? '[ + atout ]' : '[ + équipement ]');
+      add.id = key + 'Add';
       add.onclick = () => {
         if (character[key].length >= MAX_LINES) return;
-        character[key].push(''); renderList(key); edit();
+        character[key].push('');
+        renderList(key);
+        edit();
         $('edit' + key).lastElementChild.querySelector('input').focus();
       };
       list.heading.append(add);
     }
   }
-  const wounds = section(container,'Wounds','05 — BLESSURES');
-  wounds.body.before(el('p',woundRule,'wound-rule'));
-  const notes = section(container,'Notes','06 — NOTES');
+  const wounds = section(container, 'Wounds', '05 — BLESSURES');
+  wounds.body.before(el('p', woundRule, 'wound-rule'));
+  const notes = section(container, 'Notes', '06 — NOTES');
   if (editable) {
-    const input = el('textarea'); input.id = 'notes'; input.maxLength = 10000;
-    input.setAttribute('aria-labelledby','editNotesTitle'); input.placeholder = 'Notes…';
-    input.oninput = () => { character.notes = input.value; edit(); };
+    const input = el('textarea');
+    input.id = 'notes';
+    input.maxLength = 10000;
+    input.setAttribute('aria-labelledby', 'editNotesTitle');
+    input.placeholder = 'Notes…';
+    input.oninput = () => {
+      character.notes = input.value;
+      edit();
+    };
     notes.body.append(input);
   } else notes.body.className = 'notes-text';
 }
-
+// --- Read-only preview ---
 // Preview uses text nodes only: imported content cannot execute as HTML.
 function renderPreview() {
+  $('view-name').textContent = character.name.trim() ? character.name : '—';
+  $('view-physicalDescription').textContent = character.physicalDescription.trim()
+    ? character.physicalDescription : '—';
   $('viewAnarchy').textContent = character.anarchyPoints + ' / ' + MAX_ANARCHY;
   $('viewAnarchy').className = 'anarchy-value';
   $('viewStats').replaceChildren();
   Object.keys(attributes).forEach(name => {
-    const block = el('div'), heading = el('div','','stat-heading');
-    heading.append(el('span',name),el('span',character.stats[name] + ' / 5','value'));
-    const points = el('div','','preview-points'); points.setAttribute('aria-hidden','true');
-    for (let n=1;n<=5;n++) points.append(el('span','',n <= character.stats[name] ? 'filled' : ''));
-    block.append(heading,points); $('viewStats').append(block);
+    const block = el('div'),
+      heading = el('div', '', 'stat-heading');
+    heading.append(el('span', name), el('span', character.stats[name] + ' / 5', 'value'));
+    const points = el('div', '', 'preview-points');
+    points.setAttribute('aria-hidden', 'true');
+    for (let n = 1; n <= 5; n++) points.append(el('span', '', n <= character.stats[name] ? 'filled' : ''));
+    block.append(heading, points);
+    $('viewStats').append(block);
   });
   $('viewSkills').replaceChildren();
   character.skills.forEach(skill => {
-    const block = el('div','','skill-block');
-    function addRow(item,specialty=false) {
-      const row = el('div','','skill-row' + (specialty ? ' specialty' : ''));
-      row.append(el('span',(item.name || 'Sans nom') + (specialty ? ' (+2)' : ''),'skill-name'));
-      row.append(cell('INDICE',el('span',skill.index,'readout')));
-      row.append(cell('+ ATTR.',el('span',attributes[item.attribute],'readout')));
-      row.append(cell('= RD',el('span',rd(skill,item,specialty),'readout value')));
-      row.append(cell('RR',el('span',item.rr,'readout'),'rr-cell'));
+    const block = el('div', '', 'skill-block');
+    function addRow(item, specialty = false) {
+      const row = el('div', '', 'skill-row' + (specialty ? ' specialty' : ''));
+      row.append(el('span', (item.name || 'Sans nom') + (specialty ? ' (+2)' : ''), 'skill-name'));
+      row.append(cell('INDICE', el('span', skill.index, 'readout')));
+      row.append(cell('+ ATTR.', el('span', attributes[item.attribute], 'readout')));
+      row.append(cell('= RD', el('span', rd(skill, item, specialty), 'readout value')));
+      row.append(cell('RR', el('span', item.rr, 'readout'), 'rr-cell'));
       block.append(row);
     }
-    addRow(skill); skill.specialties.forEach(item => addRow(item,true)); $('viewSkills').append(block);
+    addRow(skill);
+    skill.specialties.forEach(item => addRow(item, true));
+    $('viewSkills').append(block);
   });
-  if (!character.skills.length) $('viewSkills').append(el('p','Aucune compétence.','dim'));
-  for (const key of ['atouts','equipment']) {
-    const target = $('view' + key); target.replaceChildren();
+  if (!character.skills.length) $('viewSkills').append(el('p', 'Aucune compétence.', 'dim'));
+  for (const key of ['atouts', 'equipment']) {
+    const target = $('view' + key);
+    target.replaceChildren();
     if (!character[key].length) {
-      target.append(el('p',key === 'atouts' ? 'Aucun atout.' : 'Aucun équipement.','dim')); continue;
+      target.append(el('p', key === 'atouts' ? 'Aucun atout.' : 'Aucun équipement.', 'dim'));
+      continue;
     }
-    const list = el('ul','','text-list');
-    character[key].forEach((text,index) => {
+    const list = el('ul', '', 'text-list');
+    character[key].forEach((text, index) => {
       const item = el('li');
-      item.append(el('span',String(index+1).padStart(2,'0'),'number'),el('span',text.trim() ? text : '—'));
+      item.append(el('span', String(index + 1).padStart(2, '0'), 'number'), el('span', text.trim() ? text : '—'));
       list.append(item);
     });
     target.append(list);
   }
   $('viewWounds').replaceChildren();
   woundTypes.forEach(type => {
-    const row = el('div','','wound-row');
-    row.append(el('span',character.wounds[type.key] + ' / ' + type.max,'wound-value'),woundLabel(type));
+    const row = el('div', '', 'wound-row');
+    row.append(el('span', character.wounds[type.key] + ' / ' + type.max, 'wound-value'), woundLabel(type));
     $('viewWounds').append(row);
   });
   $('viewNotes').textContent = character.notes.trim() ? character.notes : '—';
+  previewStale = false;
 }
-
-const tabs = [$('previewTab'),$('editTab')];
+// --- Tab navigation ---
+const tabs = [$('previewTab'), $('editTab'), $('missionsTab')];
 function showTab(index) {
-  tabs.forEach((tab,i) => {
-    tab.setAttribute('aria-selected',String(i === index)); tab.tabIndex = i === index ? 0 : -1;
+  tabs.forEach((tab, i) => {
+    tab.setAttribute('aria-selected', String(i === index));
+    tab.tabIndex = i === index ? 0 : -1;
     $(tab.getAttribute('aria-controls')).hidden = i !== index;
   });
-  if (index === 0) renderPreview();
+  if (index === 0 && previewStale) renderPreview();
 }
-tabs.forEach((tab,index) => {
+tabs.forEach((tab, index) => {
   tab.onclick = () => showTab(index);
   tab.onkeydown = event => {
     let next;
-    if (['ArrowLeft','ArrowRight'].includes(event.key)) next = 1-index;
+    if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
     if (event.key === 'Home') next = 0;
-    if (event.key === 'End') next = 1;
-    if (next !== undefined) { event.preventDefault(); showTab(next); tabs[next].focus(); }
+    if (event.key === 'End') next = tabs.length - 1;
+    if (next !== undefined) {
+      event.preventDefault();
+      showTab(next);
+      tabs[next].focus();
+    }
   };
 });
+// --- Mission journal ---
+function renderMissions() {
+  const panel = $('missions');
+  panel.replaceChildren();
+  const section = el('section');
+  const heading = el('div', '', 'section-title');
+  const title = el('h2', 'MISSIONS');
+  title.id = 'missionsTitle';
+  section.setAttribute('aria-labelledby', title.id);
+  title.append(' ', el('span', '[' + character.missions.length + ' / ' + MAX_MISSIONS + ']', 'dim'));
+  const add = el('button', '[ + mission ]');
+  add.id = 'addMission';
+  add.disabled = character.missions.length >= MAX_MISSIONS;
+  add.onclick = () => {
+    if (character.missions.length >= MAX_MISSIONS) return;
+    character.missions.push({title: '', description: ''});
+    renderMissions();
+    edit(false, false);
+    $('mission-title-' + (character.missions.length - 1)).focus();
+  };
+  heading.append(title, add);
+  section.append(heading);
+  if (add.disabled) section.append(el('p', 'Limite atteinte : retirez une mission avant d’en ajouter une.', 'row-limit reached'));
+  if (!character.missions.length) section.append(el('p', 'Aucune mission. Ajoutez une première ligne.', 'dim'));
+  character.missions.forEach((mission, index) => {
+    const row = el('div', '', 'mission-row');
+    const top = el('div', '', 'section-title');
+    const label = el('label', 'Titre de la mission ' + (index + 1));
+    label.htmlFor = 'mission-title-' + index;
+    const remove = el('button', '×', 'remove');
+    remove.setAttribute('aria-label', 'Supprimer la mission ' + (index + 1));
+    remove.onclick = () => {
+      if ((mission.title.trim() || mission.description.trim()) && !confirm('Supprimer cette mission ?')) return;
+      character.missions.splice(index, 1);
+      renderMissions();
+      edit(false, false);
+      $('addMission').focus();
+    };
+    top.append(label, remove);
+    const input = el('input');
+    input.id = label.htmlFor;
+    input.type = 'text';
+    input.maxLength = MAX_TEXT;
+    input.value = mission.title;
+    input.oninput = () => { mission.title = input.value; edit(false, false); };
+    const descriptionLabel = el('label', 'Description', 'mission-description-label');
+    descriptionLabel.htmlFor = 'mission-description-' + index;
+    const description = el('textarea');
+    description.id = descriptionLabel.htmlFor;
+    description.maxLength = MAX_MISSION_DESCRIPTION;
+    description.value = mission.description;
+    description.oninput = () => { mission.description = description.value; edit(false, false); };
+    row.append(top, input, descriptionLabel, description);
+    section.append(row);
+  });
+  panel.append(section);
+}
 
+// --- Editor controls ---
 function renderStats() {
   $('editStats').replaceChildren();
-  Object.keys(attributes).forEach((name,index) => {
-    const row = el('div'), heading = el('div','','stat-heading'), label = el('span',name);
+  Object.keys(attributes).forEach((name, index) => {
+    const row = el('div'),
+      heading = el('div', '', 'stat-heading'),
+      label = el('span', name);
     label.id = 'attr-' + index;
-    const output = el('output'), group = el('div','','points'), buttons = [];
-    heading.append(label,output);
-    group.setAttribute('role','radiogroup'); group.setAttribute('aria-labelledby',label.id);
+    const output = el('output'),
+      group = el('div', '', 'points'),
+      buttons = [];
+    heading.append(label, output);
+    group.setAttribute('role', 'radiogroup');
+    group.setAttribute('aria-labelledby', label.id);
     function paint() {
-      const value = character.stats[name]; output.textContent = value + ' / 5';
-      buttons.forEach((button,i) => {
-        button.classList.toggle('filled',i < value);
-        button.setAttribute('aria-checked',String(i+1 === value)); button.tabIndex = i+1 === value ? 0 : -1;
+      const value = character.stats[name];
+      output.textContent = value + ' / 5';
+      buttons.forEach((button, i) => {
+        button.classList.toggle('filled', i < value);
+        button.setAttribute('aria-checked', String(i + 1 === value));
+        button.tabIndex = i + 1 === value ? 0 : -1;
       });
     }
-    function select(value,focus=false) {
-      character.stats[name] = value; paint(); edit(); if (focus) buttons[value-1].focus();
+    function select(value, focus = false) {
+      character.stats[name] = value;
+      paint();
+      edit(true);
+      if (focus) buttons[value - 1].focus();
     }
-    for (let value=1;value<=5;value++) {
-      const button = el('button','','point');
-      button.setAttribute('role','radio'); button.setAttribute('aria-label',value + ' sur 5');
+    for (let value = 1; value <= 5; value++) {
+      const button = el('button', '', 'point');
+      button.setAttribute('role', 'radio');
+      button.setAttribute('aria-label', value + ' sur 5');
       button.onclick = () => select(value);
       button.onkeydown = event => {
         let next;
-        if (['ArrowRight','ArrowDown'].includes(event.key)) next = value%5+1;
-        if (['ArrowLeft','ArrowUp'].includes(event.key)) next = (value+3)%5+1;
+        if (['ArrowRight', 'ArrowDown'].includes(event.key)) next = value % 5 + 1;
+        if (['ArrowLeft', 'ArrowUp'].includes(event.key)) next = (value + 3) % 5 + 1;
         if (event.key === 'Home') next = 1;
         if (event.key === 'End') next = 5;
-        if (next !== undefined) { event.preventDefault(); select(next,true); }
+        if (next !== undefined) {
+          event.preventDefault();
+          select(next, true);
+        }
       };
-      buttons.push(button); group.append(button);
+      buttons.push(button);
+      group.append(button);
     }
-    paint(); row.append(heading,group); $('editStats').append(row);
+    paint();
+    row.append(heading, group);
+    $('editStats').append(row);
   });
 }
-
 // Numeric controls reject invalid edits and enforce resource limits.
-function numericInput(object,key,label,max=Number.MAX_SAFE_INTEGER-10,onUpdate=()=>{}) {
-  const input = el('input'); input.type = 'number'; input.min = 0; input.step = 1; input.max = max;
-  input.value = object[key]; input.setAttribute('aria-label',label);
+function numericInput(object, key, label, max = Number.MAX_SAFE_INTEGER - 10, onUpdate = () => {}) {
+  const input = el('input');
+  input.type = 'number';
+  input.min = 0;
+  input.step = 1;
+  input.max = max;
+  input.value = object[key];
+  input.setAttribute('aria-label', label);
   input.oninput = () => {
     const value = Number(input.value);
     const valid = input.value.trim() !== '' && Number.isSafeInteger(value) && value >= 0 && value <= max;
-    input.setAttribute('aria-invalid',String(!valid));
-    if (valid) { object[key] = value; onUpdate(); edit(); }
+    input.setAttribute('aria-invalid', String(!valid));
+    if (valid) {
+      object[key] = value;
+      onUpdate();
+      edit(key === 'index');
+    }
   };
   input.onblur = () => {
     if (input.getAttribute('aria-invalid') === 'true') {
-      input.value = object[key]; input.setAttribute('aria-invalid','false'); onUpdate();
-      status('valeur invalide — dernière valeur conservée',true);
+      input.value = object[key];
+      input.setAttribute('aria-invalid', 'false');
+      onUpdate();
+      status('valeur invalide — dernière valeur conservée', true);
     }
   };
   return input;
 }
-function counter(object,key,label,max=Number.MAX_SAFE_INTEGER-10) {
-  const wrapper = el('div','','counter'), minus = el('button','−'), plus = el('button','+');
-  function updateButtons() { minus.disabled = object[key] <= 0; plus.disabled = object[key] >= max; }
-  const input = numericInput(object,key,label,max,updateButtons);
-  for (const [button,delta] of [[minus,-1],[plus,1]]) {
-    button.setAttribute('aria-label',(delta < 0 ? 'Diminuer ' : 'Augmenter ') + label);
+function counter(object, key, label, max = Number.MAX_SAFE_INTEGER - 10) {
+  const wrapper = el('div', '', 'counter'),
+    minus = el('button', '−'),
+    plus = el('button', '+');
+  function updateButtons() {
+    minus.disabled = object[key] <= 0;
+    plus.disabled = object[key] >= max;
+  }
+  const input = numericInput(object, key, label, max, updateButtons);
+  for (const [button, delta] of [[minus, -1], [plus, 1]]) {
+    button.setAttribute('aria-label', (delta < 0 ? 'Diminuer ' : 'Augmenter ') + label);
     button.onclick = () => {
       const next = object[key] + delta;
       if (!Number.isSafeInteger(next) || next < 0 || next > max) return;
-      object[key] = next; input.value = next; input.setAttribute('aria-invalid','false'); updateButtons(); edit();
+      object[key] = next;
+      input.value = next;
+      input.setAttribute('aria-invalid', 'false');
+      updateButtons();
+      edit();
     };
   }
-  wrapper.append(minus,input,plus); updateButtons(); return wrapper;
+  wrapper.append(minus, input, plus);
+  updateButtons();
+  return wrapper;
 }
-function skillRow(skill,specialty=null) {
-  const item = specialty || skill, label = item.name || 'nouvelle ligne';
-  const row = el('div','','skill-row' + (specialty ? ' specialty' : ''));
-  const nameBox = el('div','','skill-name'), name = el('input');
-  name.type = 'text'; name.maxLength = 120; name.value = item.name;
+function skillRow(skill, specialty = null) {
+  const item = specialty || skill,
+    label = item.name || 'nouvelle ligne';
+  const row = el('div', '', 'skill-row' + (specialty ? ' specialty' : ''));
+  const nameBox = el('div', '', 'skill-name'),
+    name = el('input');
+  name.type = 'text';
+  name.maxLength = 120;
+  name.value = item.name;
   name.placeholder = specialty ? 'Spécialisation (+2)' : 'Nom de la compétence';
-  name.setAttribute('aria-label',name.placeholder);
-  name.oninput = () => { item.name = name.value; edit(); };
-  nameBox.append(name); row.append(nameBox);
-  const index = specialty ? el('span','','readout') : numericInput(skill,'index','Indice — ' + label);
-  row.append(cell('INDICE',index));
-  const select = el('select'); select.setAttribute('aria-label','Attribut — ' + label);
-  Object.entries(attributes).forEach(([key,short]) => {
-    const option = el('option',short); option.value = key; select.append(option);
+  name.setAttribute('aria-label', name.placeholder);
+  name.oninput = () => {
+    item.name = name.value;
+    edit();
+  };
+  nameBox.append(name);
+  row.append(nameBox);
+  const index = specialty ? el('span', '', 'readout') : numericInput(skill, 'index', 'Indice — ' + label);
+  row.append(cell('INDICE', index));
+  const select = el('select');
+  select.setAttribute('aria-label', 'Attribut — ' + label);
+  Object.entries(attributes).forEach(([key, short]) => {
+    const option = el('option', short);
+    option.value = key;
+    select.append(option);
   });
-  select.value = item.attribute; select.onchange = () => { item.attribute = select.value; edit(); };
-  row.append(cell('+ ATTR.',select));
-  const result = el('output','','readout'); result.setAttribute('aria-label','RD — ' + label);
-  row.append(cell('= RD',result));
+  select.value = item.attribute;
+  select.onchange = () => {
+    item.attribute = select.value;
+    edit(true);
+  };
+  row.append(cell('+ ATTR.', select));
+  const result = el('output', '', 'readout');
+  result.setAttribute('aria-label', 'RD — ' + label);
+  row.append(cell('= RD', result));
   rdUpdates.push(() => {
-    result.textContent = rd(skill,item,Boolean(specialty));
+    result.textContent = rd(skill, item, Boolean(specialty));
     if (specialty) index.textContent = skill.index + ' (+2)';
   });
-  row.append(cell('RR',counter(item,'rr','RR — ' + label),'rr-cell'));
-  const remove = el('button','×','remove'); remove.setAttribute('aria-label','Supprimer — ' + label);
+  row.append(cell('RR', counter(item, 'rr', 'RR — ' + label), 'rr-cell'));
+  const remove = el('button', '×', 'remove');
+  remove.setAttribute('aria-label', 'Supprimer — ' + label);
   remove.onclick = () => {
     if (!confirm(specialty ? 'Supprimer cette spécialisation ?' : 'Supprimer cette compétence et ses spécialisations ?')) return;
     const list = specialty ? skill.specialties : character.skills;
-    list.splice(list.indexOf(item),1); renderSkills(); edit();
+    list.splice(list.indexOf(item), 1);
+    renderSkills();
+    edit();
     if (specialty) {
       $('editSkills').children[character.skills.indexOf(skill)].querySelector('.add-specialty').focus();
     } else $('addSkill').focus();
   };
-  row.append(remove); return row;
+  row.append(remove);
+  return row;
 }
 function renderSkills() {
-  rdUpdates = []; $('editSkills').replaceChildren();
+  rdUpdates = [];
+  $('editSkills').replaceChildren();
   const full = character.skills.length >= MAX_SKILLS;
   $('skillCount').textContent = '[' + character.skills.length + ' / ' + MAX_SKILLS + ']';
   $('addSkill').disabled = full;
-  $('skillLimit').textContent = full
-    ? 'Limite atteinte : retirez une compétence avant d’en ajouter une.'
-    : (MAX_SKILLS - character.skills.length) + ' emplacement(s) disponible(s).';
-  $('skillLimit').classList.toggle('reached',full);
-  character.skills.forEach((skill,skillIndex) => {
-    const block = el('div','','skill-block'); block.append(skillRow(skill));
-    skill.specialties.forEach(spec => block.append(skillRow(skill,spec)));
+  $('skillLimit').textContent = full ? 'Limite atteinte : retirez une compétence avant d’en ajouter une.' : MAX_SKILLS - character.skills.length + ' emplacement(s) disponible(s).';
+  $('skillLimit').classList.toggle('reached', full);
+  character.skills.forEach((skill, skillIndex) => {
+    const block = el('div', '', 'skill-block');
+    block.append(skillRow(skill));
+    skill.specialties.forEach(spec => block.append(skillRow(skill, spec)));
     const count = skill.specialties.length;
     const full = count >= MAX_SPECIALTIES;
-    const add = el('button','[ + spécialisation / bonus +2 ] ' + count + ' / ' + MAX_SPECIALTIES,'add-specialty');
+    const add = el('button', '[ + spécialisation / bonus +2 ] ' + count + ' / ' + MAX_SPECIALTIES, 'add-specialty');
     add.disabled = full;
-    const limit = el('p',full
-      ? 'Limite atteinte : retirez une spécialisation avant d’en ajouter une.'
-      : (MAX_SPECIALTIES - count) + ' emplacement(s) disponible(s).','row-limit');
-    limit.classList.toggle('reached',full);
+    const limit = el('p', full ? 'Limite atteinte : retirez une spécialisation avant d’en ajouter une.' : MAX_SPECIALTIES - count + ' emplacement(s) disponible(s).', 'row-limit');
+    limit.classList.toggle('reached', full);
     limit.id = 'specialtyLimit-' + skillIndex;
-    limit.setAttribute('aria-live','polite');
-    add.setAttribute('aria-describedby',limit.id);
+    limit.setAttribute('aria-live', 'polite');
+    add.setAttribute('aria-describedby', limit.id);
     add.onclick = () => {
       if (skill.specialties.length >= MAX_SPECIALTIES) return;
-      skill.specialties.push({name:'',attribute:skill.attribute,rr:0}); renderSkills(); edit();
+      skill.specialties.push({
+        name: '',
+        attribute: skill.attribute,
+        rr: 0
+      });
+      renderSkills();
+      edit();
       const rows = $('editSkills').children[character.skills.indexOf(skill)].querySelectorAll('.skill-name input');
-      rows[rows.length-1].focus();
+      rows[rows.length - 1].focus();
     };
-    block.append(add,limit); $('editSkills').append(block);
+    block.append(add, limit);
+    $('editSkills').append(block);
   });
   rdUpdates.forEach(update => update());
 }
 function renderList(key) {
-  const target = $('edit' + key); target.replaceChildren();
+  const target = $('edit' + key);
+  target.replaceChildren();
   $(key + 'Count').textContent = '[' + character[key].length + ' / ' + MAX_LINES + ']';
   $(key + 'Add').disabled = character[key].length >= MAX_LINES;
-  character[key].forEach((value,index) => {
-    const row = el('div','','list-row'), input = el('input');
-    input.type = 'text'; input.maxLength = MAX_TEXT; input.value = value; input.placeholder = 'Texte court…';
-    const label = (key === 'atouts' ? 'Atout ' : 'Équipement ') + (index+1);
-    input.setAttribute('aria-label',label);
-    input.oninput = () => { character[key][index] = input.value; edit(); };
-    const remove = el('button','×','remove'); remove.setAttribute('aria-label','Supprimer ' + label);
+  character[key].forEach((value, index) => {
+    const row = el('div', '', 'list-row'),
+      input = el('input');
+    input.type = 'text';
+    input.maxLength = MAX_TEXT;
+    input.value = value;
+    input.placeholder = 'Texte court…';
+    const label = (key === 'atouts' ? 'Atout ' : 'Équipement ') + (index + 1);
+    input.setAttribute('aria-label', label);
+    input.oninput = () => {
+      character[key][index] = input.value;
+      edit();
+    };
+    const remove = el('button', '×', 'remove');
+    remove.setAttribute('aria-label', 'Supprimer ' + label);
     remove.onclick = () => {
       if (character[key][index].trim() && !confirm('Supprimer cette ligne ?')) return;
-      character[key].splice(index,1); renderList(key); edit();
+      character[key].splice(index, 1);
+      renderList(key);
+      edit();
       const inputs = target.querySelectorAll('input');
-      if (inputs.length) inputs[Math.min(index,inputs.length-1)].focus(); else $(key + 'Add').focus();
+      if (inputs.length) inputs[Math.min(index, inputs.length - 1)].focus();else $(key + 'Add').focus();
     };
-    row.append(el('span',String(index+1).padStart(2,'0')),input,remove); target.append(row);
+    row.append(el('span', String(index + 1).padStart(2, '0')), input, remove);
+    target.append(row);
   });
 }
 function woundLabel(type) {
-  const label = el('div','','wound-label');
-  label.append(el('strong',type.name),el('small','(' + type.effect + ')')); return label;
+  const label = el('div', '', 'wound-label');
+  label.append(el('strong', type.name), el('small', '(' + type.effect + ')'));
+  return label;
 }
 function renderWounds() {
   $('editWounds').replaceChildren();
   woundTypes.forEach(type => {
-    const row = el('div','','wound-row'), controls = el('div');
-    controls.append(counter(character.wounds,type.key,type.name,type.max),el('span','/ ' + type.max,'limit'));
-    row.append(controls,woundLabel(type)); $('editWounds').append(row);
+    const row = el('div', '', 'wound-row'),
+      controls = el('div');
+    controls.append(counter(character.wounds, type.key, type.name, type.max), el('span', '/ ' + type.max, 'limit'));
+    row.append(controls, woundLabel(type));
+    $('editWounds').append(row);
   });
 }
 function render() {
-  const anarchy = $('editAnarchy'); anarchy.className = 'anarchy-controls';
-  anarchy.replaceChildren(counter(character,'anarchyPoints','Points d’Anarchy',MAX_ANARCHY),el('span','/ ' + MAX_ANARCHY,'limit'));
-  renderStats(); renderSkills(); renderList('atouts'); renderList('equipment'); renderWounds();
-  $('notes').value = character.notes; renderPreview(); $('dirty').textContent = changed ? '*' : '';
+  $('edit-name').value = character.name;
+  $('edit-physicalDescription').value = character.physicalDescription;
+  const anarchy = $('editAnarchy');
+  anarchy.className = 'anarchy-controls';
+  anarchy.replaceChildren(counter(character, 'anarchyPoints', 'Points d’Anarchy', MAX_ANARCHY), el('span', '/ ' + MAX_ANARCHY, 'limit'));
+  renderStats();
+  renderSkills();
+  renderList('atouts');
+  renderList('equipment');
+  renderWounds();
+  $('notes').value = character.notes;
+  renderMissions();
+  renderPreview();
+  $('dirty').textContent = changed ? '*' : '';
 }
-
-function exactKeys(value,keys) {
-  return value && typeof value === 'object' && !Array.isArray(value) &&
-    Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value,key));
+// --- JSON validation and migration ---
+function exactKeys(value, keys) {
+  return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
 }
-const integer = value => Number.isSafeInteger(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER-10;
+const integer = value => Number.isSafeInteger(value) && value >= 0 && value <= Number.MAX_SAFE_INTEGER - 10;
 const shortText = value => typeof value === 'string' && value.length <= MAX_TEXT;
-const attribute = value => typeof value === 'string' && Object.hasOwn(attributes,value);
-
+const attribute = value => typeof value === 'string' && Object.hasOwn(attributes, value);
 // Validate the complete file before replacing data. Upgrade earlier exports.
 function validate(data) {
-  if (data?.version === 4 && exactKeys(data,['version','stats','skills']))
-    data = {...data,version:5,atouts:[],notes:''};
-  if (data?.version === 5 && exactKeys(data,['version','stats','skills','atouts','notes']))
-    data = {...data,version:6,equipment:[],wounds:{light:0,serious:0,incapacitating:0}};
-  if (data?.version === 6 && exactKeys(data,['version','stats','skills','atouts','equipment','wounds','notes']))
-    data = {...data,version:7,anarchyPoints:3};
-  if (!exactKeys(data,['version','anarchyPoints','stats','skills','atouts','equipment','wounds','notes']) || data.version !== 7)
-    throw new Error('fichier v4, v5, v6 ou v7 requis');
+  if (data?.version === 4 && exactKeys(data, ['version', 'stats', 'skills'])) data = {
+    ...data,
+    version: 5,
+    atouts: [],
+    notes: ''
+  };
+  if (data?.version === 5 && exactKeys(data, ['version', 'stats', 'skills', 'atouts', 'notes'])) data = {
+    ...data,
+    version: 6,
+    equipment: [],
+    wounds: {
+      light: 0,
+      serious: 0,
+      incapacitating: 0
+    }
+  };
+  if (data?.version === 6 && exactKeys(data, ['version', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes'])) data = {
+    ...data,
+    version: 7,
+    anarchyPoints: 3
+  };
+  if (data?.version === 7 && exactKeys(data,
+      ['version', 'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes'])) {
+    data = {...data, version: 8, name: '', physicalDescription: ''};
+  }
+  // Prototype versions 4–8 migrate to the first published sheet schema.
+  if (data?.version === 8 && exactKeys(data, ['version', 'name', 'physicalDescription',
+      'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes'])) {
+    data = {...data, schema: 'character-sheet', version: 1, missions: []};
+  }
+  if (!exactKeys(data, ['schema', 'version', 'missions', 'name', 'physicalDescription',
+      'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes']) ||
+      data.schema !== 'character-sheet' || data.version !== 1) {
+    throw new Error('Version 1 du Character sheet JSON requise, ou ancien prototype v4 à v8');
+  }
+  if (!Array.isArray(data.missions) || data.missions.length > MAX_MISSIONS) {
+    throw new RangeError('Liste de missions invalide : 100 missions maximum');
+  }
+  for (const mission of data.missions) {
+    if (!exactKeys(mission, ['title', 'description']) || !shortText(mission.title) ||
+        /[\r\n]/.test(mission.title) || typeof mission.description !== 'string' ||
+        mission.description.length > MAX_MISSION_DESCRIPTION) {
+      throw new Error('Mission invalide : titre de 120 caractères et description de 4 000 caractères maximum');
+    }
+  }
+  if (typeof data.name !== 'string' || data.name.length > MAX_NAME || /[\r\n]/.test(data.name)) {
+    throw new Error('Name invalide : une ligne de 120 caractères maximum');
+  }
+  if (typeof data.physicalDescription !== 'string' || data.physicalDescription.length > MAX_DESCRIPTION) {
+    throw new Error('Description physique invalide : 2 000 caractères maximum');
+  }
   if (!integer(data.anarchyPoints) || data.anarchyPoints > 3) throw new Error('Points d’Anarchy invalides : de 0 à 3');
-  if (!exactKeys(data.stats,Object.keys(attributes)) || Object.values(data.stats).some(v => !Number.isInteger(v) || v<1 || v>5))
+  if (!exactKeys(data.stats, Object.keys(attributes)) ||
+      Object.values(data.stats).some(v => !Number.isInteger(v) ||
+      v < 1 ||
+      v > 5))
     throw new Error('caractéristiques invalides');
   if (!Array.isArray(data.skills)) throw new Error('compétences invalides');
   if (data.skills.length > MAX_SKILLS)
     throw new RangeError('Le fichier contient ' + data.skills.length + ' compétences. Maximum : ' + MAX_SKILLS + '. Aucune ligne n’a été supprimée.');
   for (const skill of data.skills) {
-    if (!exactKeys(skill,['name','index','attribute','rr','specialties']) || !shortText(skill.name) ||
-      !integer(skill.index) || !attribute(skill.attribute) || !integer(skill.rr) || !Array.isArray(skill.specialties))
+    if (!exactKeys(skill, ['name', 'index', 'attribute', 'rr', 'specialties']) ||
+        !shortText(skill.name) ||
+        !integer(skill.index) ||
+        !attribute(skill.attribute) ||
+        !integer(skill.rr) ||
+        !Array.isArray(skill.specialties))
       throw new Error('compétence invalide');
     if (skill.specialties.length > MAX_SPECIALTIES)
       throw new RangeError('Une compétence contient ' + skill.specialties.length + ' spécialisations. Maximum : ' + MAX_SPECIALTIES + ' par compétence. Aucune ligne n’a été supprimée.');
-    for (const spec of skill.specialties)
-      if (!exactKeys(spec,['name','attribute','rr']) || !shortText(spec.name) || !attribute(spec.attribute) || !integer(spec.rr))
-        throw new Error('spécialisation invalide');
+    for (const spec of skill.specialties) if (!exactKeys(spec, ['name', 'attribute', 'rr']) ||
+        !shortText(spec.name) ||
+        !attribute(spec.attribute) ||
+        !integer(spec.rr))
+      throw new Error('spécialisation invalide');
   }
-  for (const key of ['atouts','equipment'])
-    if (!Array.isArray(data[key]) || data[key].length > MAX_LINES || data[key].some(v => !shortText(v) || /[\r\n]/.test(v)))
-      throw new Error('listes invalides : 10 lignes maximum, 120 caractères par ligne');
-  if (!exactKeys(data.wounds,woundTypes.map(t => t.key)) || woundTypes.some(t => !integer(data.wounds[t.key]) || data.wounds[t.key]>t.max))
+  for (const key of ['atouts', 'equipment']) if (!Array.isArray(data[key]) ||
+      data[key].length > MAX_LINES ||
+      data[key].some(v => !shortText(v) ||
+      /[\r\n]/.test(v)))
+    throw new Error('listes invalides : 10 lignes maximum, 120 caractères par ligne');
+  if (!exactKeys(data.wounds, woundTypes.map(t => t.key)) ||
+      woundTypes.some(t => !integer(data.wounds[t.key]) ||
+      data.wounds[t.key] > t.max))
     throw new Error('blessures invalides : limites 2 / 1 / 1');
   if (typeof data.notes !== 'string' || data.notes.length > 10000) throw new Error('notes invalides : 10 000 caractères maximum');
   return data;
 }
+// --- Export ---
 // Check the actual UTF-8 bytes written, using the same limit as import.
 function createExportBlob(data) {
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: 'application/json;charset=utf-8'
+  });
   if (blob.size > MAX_FILE_BYTES) throw new RangeError('L’export dépasse 2 Mo et ne pourrait pas être réimporté.');
   return blob;
 }
 $('export').onclick = () => {
   let blob;
-  try { blob = createExportBlob(character); }
-  catch (error) {
-    showFileError('EXPORT BLOQUÉ — FICHIER TROP VOLUMINEUX',error.message,
-      'Réduisez le contenu de la fiche avant de réessayer. Aucun fichier n’a été téléchargé.','export');
+  try {
+    blob = createExportBlob(character);
+  } catch (error) {
+    showFileError('EXPORT BLOQUÉ — FICHIER TROP VOLUMINEUX',
+      error.message,
+      'Réduisez le contenu de la fiche avant de réessayer. Aucun fichier n’a été téléchargé.',
+      'export');
     return;
   }
   hideFileError();
-  const url = URL.createObjectURL(blob), link = el('a'); link.href = url; link.download = 'personnage.json';
-  document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url),1000);
+  const url = URL.createObjectURL(blob),
+    link = el('a');
+  link.href = url;
+  link.download = 'personnage.json';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
   // Requesting a download does not confirm that the browser saved the file.
   // Preserve the existing dirty flag and close warning.
   status('téléchargement demandé — vérifiez que personnage.json est bien enregistré. L’éditeur ne peut pas confirmer la sauvegarde.');
 };
-// Prepare both views without changing the live sheet, data or event handlers.
+// --- Transactional import ---
+// Prepare all tab panels without changing the live sheet, data or event handlers.
 function prepareImportedSheet(candidate) {
-  const previous = {character,changed,rdUpdates,renderRoot};
+  const previous = {
+    character,
+    changed,
+    rdUpdates,
+    renderRoot,
+    previewStale
+  };
   const root = document.createElement('div');
   const preview = $('preview').cloneNode(false);
   const editor = $('editor').cloneNode(false);
-  const dirty = el('span'); dirty.id = 'dirty';
-  root.append(preview,editor,dirty);
+  const missions = $('missions').cloneNode(false);
+  const dirty = el('span');
+  dirty.id = 'dirty';
+  root.append(preview, editor, missions, dirty);
   try {
     renderRoot = root;
     character = candidate;
     changed = false;
-    buildLayout(preview,'view',false);
-    buildLayout(editor,'edit',true);
+    buildLayout(preview, 'view', false);
+    buildLayout(editor, 'edit', true);
     render();
-    return {preview,editor,updates:rdUpdates};
+    return {
+      preview,
+      editor,
+      missions,
+      updates: rdUpdates
+    };
   } finally {
     character = previous.character;
     changed = previous.changed;
     rdUpdates = previous.rdUpdates;
     renderRoot = previous.renderRoot;
+    previewStale = previous.previewStale;
   }
 }
-
 function applyImportedSheet(candidate) {
   const prepared = prepareImportedSheet(candidate);
   // One DOM replacement commits the fully constructed views.
-  $('sheetViews').replaceChildren(prepared.preview,prepared.editor);
+  $('sheetViews').replaceChildren(prepared.preview, prepared.editor, prepared.missions);
   character = candidate;
   changed = false;
   rdUpdates = prepared.updates;
+  previewStale = false;
   $('dirty').textContent = '';
 }
-
 function hideFileError() {
   $('errorBanner').hidden = true;
 }
 let errorOperation = 'import';
-function showFileError(title,reason,action,operation='import') {
+function showFileError(title, reason, action, operation = 'import') {
   errorOperation = operation;
   $('errorTitle').textContent = title;
   $('errorReason').textContent = reason;
@@ -557,16 +1436,20 @@ function showFileError(title,reason,action,operation='import') {
     : 'Votre fiche actuelle et vos modifications sont conservées. Aucun remplacement n’a été effectué.';
   $('errorAction').textContent = action;
   $('errorBanner').hidden = false;
-  $('errorBanner').focus({preventScroll:true});
-  $('errorBanner').scrollIntoView({behavior:'auto',block:'start'});
-  status(operation === 'export' ? 'export non effectué' : 'import non appliqué',true);
+  $('errorBanner').focus({
+    preventScroll: true
+  });
+  $('errorBanner').scrollIntoView({
+    behavior: 'auto',
+    block: 'start'
+  });
+  status(operation === 'export' ? 'export non effectué' : 'import non appliqué', true);
 }
 $('dismissError').onclick = () => {
   hideFileError();
   $(errorOperation).focus();
   status(errorOperation === 'export' ? 'message fermé — export non effectué' : 'message fermé — import non appliqué');
 };
-
 // A newer import or reset supersedes an earlier asynchronous file read.
 let importAttempt = 0;
 $('import').onclick = () => $('file').click();
@@ -580,8 +1463,9 @@ $('file').onchange = async event => {
   try {
     if (file.size > MAX_FILE_BYTES) throw new RangeError('Le fichier dépasse la limite de 2 Mo.');
     let text;
-    try { text = await file.text(); }
-    catch {
+    try {
+      text = await file.text();
+    } catch {
       if (attempt !== importAttempt) return;
       showFileError('IMPORT IMPOSSIBLE — LECTURE DU FICHIER',
         'Le navigateur n’a pas pu lire le fichier sélectionné.',
@@ -611,16 +1495,24 @@ $('file').onchange = async event => {
   }
   status('fiche importée');
 };
+// --- Reset and startup ---
 $('reset').onclick = () => {
   if (!confirm('Réinitialiser toute la fiche ?')) return;
-  importAttempt++; hideFileError();
-  character = defaults(); changed = false; render(); status('fiche réinitialisée');
+  importAttempt++;
+  hideFileError();
+  character = defaults();
+  changed = false;
+  render();
+  status('fiche réinitialisée');
 };
-window.addEventListener('beforeunload',event => {
-  if (changed) { event.preventDefault(); event.returnValue = ''; }
+window.addEventListener('beforeunload', event => {
+  if (changed) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
 });
-buildLayout($('preview'),'view',false);
-buildLayout($('editor'),'edit',true);
+buildLayout($('preview'), 'view', false);
+buildLayout($('editor'), 'edit', true);
 render();
 </script>
 </body>
