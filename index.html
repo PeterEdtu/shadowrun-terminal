@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>//SHADOWRUN-TERMINAL//</title>
+<title>//CHARACTER TERMINAL//</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <style>
 /* All theme colors are defined here. */
@@ -493,9 +493,12 @@ footer {
 }
 .profile-fields {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   min-width: 0;
 }
+.profile-fields > div { min-width: 0; }
+.profile-fields .profile-description { grid-column: 1 / -1; }
 .profile-label {
   display: block;
   margin-bottom: 8px;
@@ -578,7 +581,7 @@ footer {
     </div>
     <header>
       <h1>
-        SHADOWRUN-TERMINAL
+        CHARACTER-TERMINAL
         <span id="dirty">
         </span>
       </h1>
@@ -711,6 +714,7 @@ function defaults() {
     version: 1,
     missions: [],
     name: '',
+    archetype: '',
     physicalDescription: '',
     anarchyPoints: 3,
     stats: Object.fromEntries(Object.keys(attributes).map(name => [name, 1])),
@@ -778,9 +782,10 @@ function buildLayout(container, prefix, editable) {
   // Identity fields share the top row with the Anarchy resource.
   for (const [key, caption, multiline, maxLength] of [
     ['name', 'Name', false, MAX_NAME],
+    ['archetype', 'Archétype', false, MAX_NAME],
     ['physicalDescription', 'Description physique', true, MAX_DESCRIPTION]
   ]) {
-    const field = el('div');
+    const field = el('div', '', multiline ? 'profile-description' : '');
     const label = el(editable ? 'label' : 'h2', caption, 'profile-label');
     const value = el(editable ? (multiline ? 'textarea' : 'input') : 'p');
     value.id = prefix + '-' + key;
@@ -901,6 +906,7 @@ function buildLayout(container, prefix, editable) {
 // Preview uses text nodes only: imported content cannot execute as HTML.
 function renderPreview() {
   $('view-name').textContent = character.name.trim() ? character.name : '—';
+  $('view-archetype').textContent = character.archetype.trim() ? character.archetype : '—';
   $('view-physicalDescription').textContent = character.physicalDescription.trim()
     ? character.physicalDescription : '—';
   $('viewAnarchy').textContent = character.anarchyPoints + ' / ' + MAX_ANARCHY;
@@ -1417,6 +1423,7 @@ function renderWounds() {
 }
 function render() {
   $('edit-name').value = character.name;
+  $('edit-archetype').value = character.archetype;
   $('edit-physicalDescription').value = character.physicalDescription;
   const anarchy = $('editAnarchy');
   anarchy.className = 'anarchy-controls';
@@ -1470,7 +1477,11 @@ function validate(data) {
       'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes'])) {
     data = {...data, schema: 'character-sheet', version: 1, missions: []};
   }
-  if (!exactKeys(data, ['schema', 'version', 'missions', 'name', 'physicalDescription',
+  // Older Version 1 sheets have no archetype; preserve their compatibility.
+  if (data?.schema === 'character-sheet' && data.version === 1 && !Object.hasOwn(data, 'archetype')) {
+    data = {...data, archetype: ''};
+  }
+  if (!exactKeys(data, ['schema', 'version', 'missions', 'name', 'archetype', 'physicalDescription',
       'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes']) ||
       data.schema !== 'character-sheet' || data.version !== 1) {
     throw new Error('Version 1 du Character sheet JSON requise, ou ancien prototype v4 à v8');
@@ -1487,6 +1498,9 @@ function validate(data) {
   }
   if (typeof data.name !== 'string' || data.name.length > MAX_NAME || /[\r\n]/.test(data.name)) {
     throw new Error('Name invalide : une ligne de 120 caractères maximum');
+  }
+  if (typeof data.archetype !== 'string' || data.archetype.length > MAX_NAME || /[\r\n]/.test(data.archetype)) {
+    throw new Error('Archétype invalide : une ligne de 120 caractères maximum');
   }
   if (typeof data.physicalDescription !== 'string' || data.physicalDescription.length > MAX_DESCRIPTION) {
     throw new Error('Description physique invalide : 2 000 caractères maximum');
