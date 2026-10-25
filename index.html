@@ -636,7 +636,7 @@ footer {
           <label for="riskCount">Dés convertis en risque<input id="riskCount" type="number" min="0" max="0" step="1" value="0"></label>
         </div>
         <p id="dicePool" aria-live="polite"></p>
-        <p class="dim">Dés de risque : 5–6 = 2 succès ; 1–2 = complication, quel que soit l’état. Ils remplacent des dés ordinaires. Complications finales = dés de risque sur 1–2 − RR de la compétence ou spécialité (minimum 0 ; attribut seul : RR 0).</p>
+        <p class="dim">Dés de risque : 4–6 avec Avantage, sinon 5–6 = 2 succès ; 1–2 = complication dans tous les états. Ils remplacent des dés ordinaires. Complications finales = dés de risque sur 1–2 − RR de la compétence ou spécialité (attribut seul : RR 0).</p>
         <p id="diceWarning" role="status"></p>
         <button id="rollDice" type="button">[ lancer les D6 ]</button>
         <p id="diceSummary" role="status" aria-live="polite">Aucun lancer.</p>
@@ -1007,7 +1007,7 @@ function logRoll(source, state, total, risk, successes, glitches, faces, rawGlit
       ' | ' + state + ' | ' + total + ' D6 (' + risk + ' risque)\n',
     el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
     ' | Complications : ', el('strong', glitches, 'roll-complications'),
-    ' (' + rawGlitches + ' brutes − RR ' + rr + ', minimum 0)',
+    ' (' + rawGlitches + ' brutes − RR ' + rr + ')',
     '\nDés : ' + faces.join(' ') + ' (R = risque)'
   );
   if (history.firstElementChild) history.firstElementChild.before(entry);
@@ -1077,7 +1077,8 @@ function updateDicePool() {
 }
 function scoreDie(face, risk, state) {
   const threshold = state === 'advantage' ? 4 : state === 'disadvantage' ? 6 : 5;
-  return {successes: risk ? (face >= 5 ? 2 : 0) : (face >= threshold ? 1 : 0), glitch: risk && face <= 2};
+  const riskThreshold = state === 'advantage' ? 4 : 5;
+  return {successes: risk ? (face >= riskThreshold ? 2 : 0) : (face >= threshold ? 1 : 0), glitch: risk && face <= 2};
 }
 function bindDiceControls() {
   $('diceMode').onchange = updateDicePool;
@@ -1116,7 +1117,7 @@ function rollDice() {
     el('strong', successes + ' succès', successes ? 'roll-success' : 'roll-zero'),
     ' — COMPLICATION / GLITCH : ',
     el('strong', glitches, 'roll-complications'),
-    ' (' + rawGlitches + ' brutes − RR ' + rr + ', minimum 0)',
+    ' (' + rawGlitches + ' brutes − RR ' + rr + ')',
     glitches ? ' — Complications restantes.' : ' — Aucune complication restante.'
   );
   logRoll(source, stateLabel, total, risk, successes, glitches, faces, rawGlitches, rr);
