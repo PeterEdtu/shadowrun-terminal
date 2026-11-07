@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>//SHADOWRUN-TERMINAL//</title>
+<title>CYBERPUNK-TERMINAL</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <style>
 /* All theme colors are defined here. */
@@ -342,6 +342,52 @@ input[type=number] {
   width: 150px;
   flex-shrink: 0
 }
+#viewHumanity.humanity-danger, #cyberHumanity.humanity-danger, #editHumanity.humanity-danger, #editHumanity.humanity-danger input, #editHumanity.humanity-danger label { color: #ff7373; font-weight: 700; }
+.cyber-danger-banner { margin: 18px 0 0; padding: 16px; border: 1px solid #ff7373; background: #39161e; color: #ff7373; font-weight: 700; overflow-wrap: anywhere; }
+.cyber-summary { display: flex; gap: 24px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.cyber-summary .anarchy-value { font-size: 32px; }
+.cyber-summary progress { display: block; width: 180px; max-width: 100%; height: 8px; margin-top: 12px; accent-color: var(--accent); }
+.cyber-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 28px; padding-top: 24px; }
+.cyber-map { border: 1px solid var(--line); padding: 16px; align-self: start; }
+.cyber-silhouette { width: 100%; max-width: 240px; margin: 0 auto 16px; }
+.cyber-skeleton { display: block; width: 100%; height: auto; overflow: visible; }
+.cyber-region { color: #a99bb5; cursor: pointer; outline: none; }
+.cyber-region .bone { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: miter; stroke-linecap: square; }
+.cyber-region .hit-area { fill: transparent; stroke: none; pointer-events: all; }
+.cyber-region .implant-marker { fill: var(--bg); stroke: var(--accent); stroke-width: 1.8; opacity: 0; pointer-events: none; }
+.cyber-region[aria-pressed=true], .cyber-region:hover, .cyber-region:focus-visible { color: var(--accent); }
+.cyber-region:focus-visible .hit-area { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 4; }
+.cyber-region.installed .implant-marker { opacity: 1; }
+.cyber-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cyber-nav button { display: flex; justify-content: space-between; gap: 8px; padding: 10px; }
+.cyber-nav button[aria-pressed=true] { border-color: var(--accent); background: #30223e; color: var(--accent); }
+.cyber-badge { color: var(--accent); }
+.cyber-grid { min-width: 0; }
+.cyber-grid section { min-width: 0; padding: 0; }
+.cyber-section-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 16px; }
+.cyber-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; border: 1px solid var(--line); padding: 18px; margin-top: 20px; }
+.cyber-form > h3, .cyber-form > label:first-of-type, .cyber-form > label:nth-of-type(2), .cyber-form > button, .cyber-form > p { grid-column: 1 / -1; }
+.cyber-form h3 { font-size: 13px; font-weight: normal; color: var(--accent); margin: 0; }
+.cyber-form label { display: grid; gap: 6px; min-width: 0; font-size: 12px; color: var(--dim); }
+.cyber-form input, .cyber-form textarea { width: 100%; min-width: 0; }
+.cyber-form textarea { min-height: 80px; }
+.cyber-item { border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 16px; margin-bottom: 12px; overflow-wrap: anywhere; }
+.cyber-item p { white-space: pre-wrap; }
+.cyber-confirm { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.cyber-confirm p { flex-basis: 100%; margin: 0; }
+.cyber-item button { font-size: 12px; }
+.cyber-metrics { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.cyber-metrics span { padding: 6px 8px; border: 1px solid var(--line); font-size: 12px; color: var(--accent); }
+.cyber-empty { padding: 28px 18px; border: 1px dashed var(--line); color: var(--dim); text-align: center; }
+@media (max-width: 680px) {
+  .cyber-layout { grid-template-columns: minmax(0, 1fr); }
+  .cyber-summary { align-items: flex-start; gap: 16px; }
+  .cyber-summary .anarchy-value { white-space: normal; overflow-wrap: anywhere; }
+  .cyber-summary progress { width: 140px; }
+}
+.resource-stack { display: grid; align-content: start; gap: 24px; min-width: 0; }
+.humanity-maximum { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.humanity-maximum input { min-width: 0; width: 90px; }
 .anarchy-value {
   color: var(--accent);
   font-size: 24px;
@@ -377,6 +423,11 @@ footer {
   grid-template-columns: minmax(140px,1fr) 76px 88px 60px 76px
 }
 @media(hover:hover) {
+  /* Preserve the selected tab’s contrasting background on hover. */
+  .tabs button[aria-selected=true]:hover {
+    background: var(--accent);
+    color: var(--bg)
+  }
   button:not(:disabled):hover {
     border-color: var(--accent);
     background: var(--field)
@@ -499,6 +550,13 @@ footer {
 }
 .profile-fields > div { min-width: 0; }
 .profile-fields .profile-description { grid-column: 1 / -1; }
+.finances { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.finances-edit { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr); }
+.credit-adjustment button { width: 100%; padding: 8px 2px; margin-top: 6px; font-size: 11px; }
+@media (max-width: 480px) { .finances-edit { grid-template-columns: minmax(0, 1fr); } }
+.finances > div { min-width: 0; }
+.finances input { width: 100%; min-width: 0; }
+.debt, .debt .profile-label, .debt input { color: #b8b8bf; }
 .profile-label {
   display: block;
   margin-bottom: 8px;
@@ -558,6 +616,69 @@ footer {
 .roll-log-entry { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere; }
 .roll-log-entry:last-child { border-bottom: 0; }
 @media (max-width: 480px) { .dice-controls { grid-template-columns: 1fr; } }
+.weapon-row {display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line);}
+.weapon-row > input {grid-column: 1 / -1;}
+.weapon-row .mobile-label {display: block; margin-bottom: 5px;}
+.weapon-row input, .weapon-row select {width: 100%; min-width: 0;}
+.weapon-row .remove {justify-self: end;}
+
+/* Read-only weapon boxes; CONFIG keeps its editable controls. */
+.weapon-card {border: 1px solid var(--line); margin-bottom: 14px; min-width: 0;}
+.weapon-card-head {display: flex; align-items: baseline; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--field);}
+.weapon-id {color: var(--dim); font-size: 11px; white-space: nowrap;}
+.weapon-card h3 {margin: 0; font-size: 14px; color: var(--accent); overflow-wrap: anywhere;}
+.weapon-card-body {display: grid; grid-template-columns: minmax(0,1fr) 88px;}
+.weapon-details {padding: 12px 14px; display: grid; gap: 7px;}
+.weapon-detail {display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 12px;}
+.weapon-detail span {color: var(--dim);}
+.weapon-detail strong {font-weight: normal; text-align: right;}
+.weapon-total {border-left: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 12px 6px; min-width: 0;}
+.weapon-total span {font-size: 10px; color: var(--dim);}
+.weapon-total strong {font-size: 30px; line-height: 1.3; color: var(--accent); max-width: 100%; overflow-wrap: anywhere;}
+.weapon-equation {padding: 7px 14px; border-top: 1px dashed var(--line); font-size: 11px; color: var(--dim); overflow-wrap: anywhere;}
+.paired > section {min-width: 0;}
+
+/* Character dossier: identity, resources and a compact inventory summary. */
+.profile-row {gap: 0; padding: 0; margin: 24px 0; border: 1px solid var(--line); grid-template-columns: minmax(0,1fr) 300px;}
+.dossier-banner {grid-column: 1 / -1; padding: 9px 16px; background: var(--field); border-bottom: 1px solid var(--line); color: var(--accent); font-size: 11px; letter-spacing: 1px;}
+.profile-fields {padding: 22px; gap: 22px 24px; align-content: start;}
+.profile-label {font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim);}
+#view-name {font-size: 26px; font-weight: bold; color: var(--accent); line-height: 1.3;}
+#view-archetype {font-size: 20px;}
+.profile-fields > .finances {grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 16px; margin-top: 0;}
+#view-credits, #view-debts {font-size: 22px;}
+.profile-row .resource-stack {gap: 0; border-left: 1px solid var(--line); align-content: stretch;}
+.profile-row .anarchy-bar {padding: 18px 20px; align-self: stretch; gap: 10px; min-width: 0;}
+.profile-row .anarchy-bar + .anarchy-bar {border-top: 1px solid var(--line);}
+.profile-row .anarchy-value {font-size: 32px;}
+.dossier-meter {display: flex; gap: 6px; width: 100%; height: 7px;}
+.dossier-meter span {flex: 1; background: var(--line);}
+.dossier-meter .filled {background: var(--accent);}
+#viewHumanityMeter {background: var(--line);}
+#viewHumanityMeter span {flex: none;}
+#viewHumanityMeter.danger .filled {background: #ff7373;}
+.dossier-inventory {grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-top: 1px solid var(--line);}
+.inventory-box {padding: 16px 20px; min-width: 0;}
+.inventory-box + .inventory-box {border-left: 1px solid var(--line);}
+.inventory-heading {display: flex; justify-content: space-between; gap: 12px; color: var(--dim); font-size: 12px;}
+.inventory-heading strong {color: var(--accent); font-size: 22px; line-height: 1.2;}
+.inventory-weapons {list-style: none; padding: 0; margin: 12px 0 0; font-size: 12px;}
+.inventory-weapons li {display: flex; justify-content: space-between; gap: 12px; padding: 5px 0;}
+.inventory-weapons span {overflow-wrap: anywhere; min-width: 0;}
+.inventory-weapons strong {color: var(--accent); white-space: nowrap; font-weight: normal;}
+@media(max-width:700px) {
+  .profile-row {grid-template-columns: minmax(0,1fr);}
+  .profile-row .resource-stack {border-left: 0; border-top: 1px solid var(--line);}
+  .profile-fields {padding: 18px; gap: 18px;}
+  .dossier-inventory {grid-template-columns: minmax(0,1fr);}
+  .inventory-box + .inventory-box {border-left: 0; border-top: 1px solid var(--line);}
+}
+.inventory-scroll {max-height: 58.4px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--accent) var(--field);}
+.inventory-scroll li {height: 29.2px; align-items: center;}
+.inventory-scroll li span {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.debug-setting {display: flex; align-items: center; gap: 12px; margin: 20px 0;}
+.debug-setting input {width: 18px; height: 18px; accent-color: var(--accent);}
+.debug-json {max-height: 480px; overflow: auto; padding: 16px; border: 1px solid var(--line); background: var(--field); font: 12px/1.6 "Courier New", monospace;}
 </style>
 </head>
 <body>
@@ -581,12 +702,12 @@ footer {
     </div>
     <header>
       <h1>
-        SHADOWRUN-TERMINAL
+        CYBERPUNK-TERMINAL
         <span id="dirty">
         </span>
       </h1>
       <span class="dim">
-        local / v0.2
+        local / v0.3
       </span>
     </header>
     <nav aria-label="Fichiers">
@@ -605,13 +726,16 @@ footer {
       <button id="previewTab" role="tab" aria-selected="true" aria-controls="preview">
         //VIEW//
       </button>
+      <button id="cyberwareTab" hidden role="tab" aria-selected="false" aria-controls="cyberware" tabindex="-1">//CYBERWARE//</button>
       <button id="editTab" role="tab" aria-selected="false" aria-controls="editor" tabindex="-1">
         //CONFIG//
       </button>
       <button id="missionsTab" role="tab" aria-selected="false" aria-controls="missions" tabindex="-1">//MISSIONS//</button>
       <button id="diceTab" role="tab" aria-selected="false" aria-controls="dice" tabindex="-1">//ROLL//</button>
+      <button id="debugTab" role="tab" aria-selected="false" aria-controls="debug" tabindex="-1">//DEBUG//</button>
     </div>
     <div id="sheetViews">
+      <div id="cyberware" class="panel" role="tabpanel" aria-labelledby="cyberwareTab" hidden></div>
       <div id="preview" class="panel" role="tabpanel" aria-labelledby="previewTab" tabindex="0">
       </div>
       <div id="editor" class="panel" role="tabpanel" aria-labelledby="editTab" hidden>
@@ -636,7 +760,7 @@ footer {
           <label for="riskCount">Dés convertis en risque<input id="riskCount" type="number" min="0" max="0" step="1" value="0"></label>
         </div>
         <p id="dicePool" aria-live="polite"></p>
-        <p class="dim">Dés de risque : 4–6 avec Avantage, sinon 5–6 = 2 succès ; 1–2 = complication dans tous les états. Ils remplacent des dés ordinaires. Complications finales = dés de risque sur 1–2 − RR de la compétence ou spécialité (attribut seul : RR 0).</p>
+        <p class="dim">Dés de risque : 4–6 avec Avantage, sinon 5–6 = 2 succès ; 1 = complication dans tous les états. Ils remplacent des dés ordinaires. Complications finales = dés de risque sur 1 − RR de la compétence ou spécialité (attribut seul : RR 0).</p>
         <p id="diceWarning" role="status"></p>
         <button id="rollDice" type="button">[ lancer les D6 ]</button>
         <p id="diceSummary" role="status" aria-live="polite">Aucun lancer.</p>
@@ -653,6 +777,18 @@ footer {
       </section>
     </div>
     </div>
+    <div id="debug" class="panel" role="tabpanel" aria-labelledby="debugTab" hidden>
+      <section>
+        <h2>Paramètres</h2>
+        <label class="debug-setting"><input id="showCyberware" type="checkbox"> Afficher //CYBERWARE//</label>
+      </section>
+      <section>
+        <h2>JSON</h2>
+        <p class="dim">JSON par défaut ou dernier fichier importé. Les modifications de la fiche ne changent pas cet aperçu.</p>
+        <pre class="debug-json" tabindex="0" aria-label="Contenu JSON"><code id="importedJson"></code></pre>
+      </section>
+      <p class="dim" id="debugVersion">v0.3 · build 002</p>
+    </div>
     <footer>
       <p id="status" role="status" aria-live="polite">
         &gt; fiche chargée
@@ -665,6 +801,8 @@ let renderRoot = null;
 const $ = id => renderRoot ? renderRoot.querySelector('#' + id) : document.getElementById(id);
 // --- Configuration and default character data ---
 const MAX_NAME = 120, MAX_DESCRIPTION = 2000;
+const CYBER_PARTS = {head: 'Tête', arms: 'Bras', body: 'Corps', legs: 'Jambes'};
+const MAX_CYBERWARE = 25;
 const MAX_MISSIONS = 100, MAX_MISSION_DESCRIPTION = 4000;
 const MAX_LINES = 10,
   MAX_TEXT = 120,
@@ -715,8 +853,12 @@ function defaults() {
     missions: [],
     name: '',
     archetype: '',
+    credits: 0,
+    debts: 0,
     physicalDescription: '',
     anarchyPoints: 3,
+    humanity: {current: 100, max: 100},
+    cyberware: {head: [], arms: [], body: [], legs: []},
     stats: Object.fromEntries(Object.keys(attributes).map(name => [name, 1])),
     skills: seeds.map(([name, index, attribute, specialty, specialtyAttribute]) => ({
       name,
@@ -730,6 +872,7 @@ function defaults() {
       }] : []
     })),
     atouts: [],
+    weapons: [],
     equipment: [],
     wounds: {
       light: 0,
@@ -739,7 +882,29 @@ function defaults() {
     notes: ''
   };
 }
-let character = defaults(),
+// Embedded starter works when opened directly, without fetching a JSON file.
+function starterCharacter() {
+  const data = defaults();
+  data.name = 'Placeholder';
+  data.archetype = 'Rigger';
+  data.physicalDescription = 'Veste de pilote, cheveux courts et interface de contrôle à la tempe.';
+  data.credits = 1500;
+  data.debts = -500;
+  data.stats = {FORCE: 3, 'AGILITÉ': 4, 'VOLONTÉ': 2, LOGIQUE: 3, CHARISME: 2, ANARCHY: 3};
+  for (const skill of data.skills) {
+    if (skill.name === 'Pilotage' || skill.name === 'Ingénierie') skill.rr = 1;
+  }
+  data.atouts = ['Contact mécanicien : accès à un atelier de quartier.'];
+  data.weapons = [
+    {name: 'Pistolet lourd', baseDamage: 5, attribute: null},
+    {name: 'Mains nues', baseDamage: 1, attribute: 'FORCE'}
+  ];
+  data.equipment = ['Commlink personnel', 'Trousse de réparation'];
+  data.missions = [{title: 'Première livraison', description: 'Livrer un colis scellé au garage du quartier.'}];
+  data.notes = 'Personnage d’exemple à personnaliser. Les valeurs et le matériel sont indicatifs.';
+  return data;
+}
+let character = starterCharacter(),
   changed = false,
   rdUpdates = [];
 let previewStale = false;
@@ -758,11 +923,16 @@ function status(message, error = false) {
 function edit(updateDerived = false, updatePreview = true) {
   changed = true;
   $('dirty').textContent = '*';
-  if (updateDerived) rdUpdates.forEach(update => update());
+  if (updateDerived) {
+    rdUpdates.forEach(update => update());
+    updateWeaponDamage();
+  }
   if (updatePreview) {
     previewStale = true;
     if (!$('preview').hidden) renderPreview();
   }
+  renderInventory('edit');
+  if ($('cyberHumanity')) updateCyberHumanity();
   status('modifié');
 }
 function rd(skill, item, specialty) {
@@ -778,6 +948,9 @@ function cell(label, node, className = '') {
 function buildLayout(container, prefix, editable) {
   container.replaceChildren();
   const profile = el('div', '', 'profile-row');
+  const banner = el('div', '//ID-FILES//', 'dossier-banner');
+  profile.append(banner);
+  let profileFinances;
   const fields = el('div', '', 'profile-fields');
   // Identity fields share the top row with the Anarchy resource.
   for (const [key, caption, multiline, maxLength] of [
@@ -801,8 +974,23 @@ function buildLayout(container, prefix, editable) {
       value.className = 'profile-text';
     }
     field.append(label, value);
+    if (key === 'archetype') {
+      const finances = el('div', '', 'finances' + (editable ? ' finances-edit' : ''));
+      for (const [moneyKey, caption] of [['credits', 'Credits'], ['debts', 'Dettes']]) {
+        const box = el('div', '', moneyKey === 'debts' ? 'debt' : '');
+        const moneyLabel = el(editable ? 'label' : 'h2', caption, 'profile-label');
+        const money = editable ? moneyInput(moneyKey) : el('p', '', 'profile-text');
+        money.id = prefix + '-' + moneyKey;
+        if (editable) moneyLabel.htmlFor = money.id;
+        box.append(moneyLabel, money);
+        finances.append(box);
+        if (editable && moneyKey === 'credits') finances.append(creditAdjustment());
+      }
+      profileFinances = finances;
+    }
     fields.append(field);
   }
+  fields.append(profileFinances);
   profile.append(fields);
   const anarchy = el('div', '', 'anarchy-bar'),
     label = el('div');
@@ -814,7 +1002,28 @@ function buildLayout(container, prefix, editable) {
   const value = el('div');
   value.id = prefix + 'Anarchy';
   anarchy.append(label, value);
-  profile.append(anarchy);
+  const resources = el('div', '', 'resource-stack');
+  const humanity = el('div', '', 'anarchy-bar');
+  const humanityTitle = el('h2', 'Humanity');
+  humanityTitle.id = prefix + 'HumanityTitle';
+  humanity.setAttribute('role', 'group');
+  humanity.setAttribute('aria-labelledby', humanityTitle.id);
+  const humanityValue = el('div');
+  humanityValue.id = prefix + 'Humanity';
+  humanity.append(humanityTitle, humanityValue);
+  if (!editable) {
+    for (const [block, key] of [[anarchy, 'Anarchy'], [humanity, 'Humanity']]) {
+      const meter = el('div', '', 'dossier-meter');
+      meter.id = prefix + key + 'Meter';
+      meter.setAttribute('aria-hidden', 'true');
+      block.append(meter);
+    }
+  }
+  resources.append(anarchy, humanity);
+  profile.append(resources);
+  const inventory = el('div', '', 'dossier-inventory');
+  inventory.id = prefix + 'Inventory';
+  profile.append(inventory);
   container.append(profile);
   function section(parent, key, title) {
     const node = el('section'),
@@ -867,28 +1076,28 @@ function buildLayout(container, prefix, editable) {
     skills.heading.append(add);
   }
   const pair = el('div', '', 'paired');
-  container.append(pair);
-  for (const [key, title] of [['atouts', '03 — ATOUTS'], ['equipment', '04 — ARMES / ÉQUIPEMENTS']]) {
-    const list = section(pair, key, title);
+  for (const [key, title] of [['atouts', '03 — ATOUTS'], ['weapons', '04 — ARMES'], ['equipment', '05 — ÉQUIPEMENTS']]) {
+    if (key === 'weapons') container.append(pair);
+    const list = section(key === 'atouts' ? container : pair, key, title);
     if (editable) {
       const count = el('span', '', 'dim');
       count.id = key + 'Count';
       list.heading.querySelector('h2').append(' ', count);
-      const add = el('button', key === 'atouts' ? '[ + atout ]' : '[ + équipement ]');
+      const add = el('button', key === 'atouts' ? '[ + atout ]' : key === 'weapons' ? '[ + arme ]' : '[ + équipement ]');
       add.id = key + 'Add';
       add.onclick = () => {
         if (character[key].length >= MAX_LINES) return;
-        character[key].push('');
-        renderList(key);
+        character[key].push(key === 'weapons' ? {name: '', baseDamage: 1, attribute: null} : '');
+        if (key === 'weapons') renderWeapons(); else renderList(key);
         edit();
         $('edit' + key).lastElementChild.querySelector('input').focus();
       };
       list.heading.append(add);
     }
   }
-  const wounds = section(container, 'Wounds', '05 — BLESSURES');
+  const wounds = section(container, 'Wounds', '06 — BLESSURES');
   wounds.body.before(el('p', woundRule, 'wound-rule'));
-  const notes = section(container, 'Notes', '06 — NOTES');
+  const notes = section(container, 'Notes', '07 — NOTES');
   if (editable) {
     const input = el('textarea');
     input.id = 'notes';
@@ -902,15 +1111,71 @@ function buildLayout(container, prefix, editable) {
     notes.body.append(input);
   } else notes.body.className = 'notes-text';
 }
+// The dossier summary uses the same arrays and damage calculation as the sheet.
+function renderInventory(prefix) {
+  const target = $(prefix + 'Inventory');
+  if (!target) return;
+  target.replaceChildren();
+  for (const [key, label] of [['atouts', 'Atouts'], ['weapons', 'Armes'], ['equipment', 'Équipements']]) {
+    const box = el('div', '', 'inventory-box');
+    const heading = el('div', '', 'inventory-heading');
+    heading.append(el('span', label), el('strong', character[key].length));
+    box.append(heading);
+    if (key === 'weapons' && character.weapons.length) {
+      const list = el('ul', '', 'inventory-weapons');
+      character.weapons.forEach(weapon => {
+        const item = el('li');
+        item.append(el('span', weapon.name || 'Sans nom'), el('strong', 'VD ' + weaponDamage(weapon)));
+        item.setAttribute('title', weapon.name || 'Sans nom');
+        list.append(item);
+      });
+      if (character[key].length > 2) {
+        list.classList.toggle('inventory-scroll', true);
+        list.tabIndex = 0;
+        list.setAttribute('aria-label', label + ' — liste défilante');
+      }
+      box.append(list);
+    } else if (key !== 'weapons' && character[key].length) {
+      const list = el('ul', '', 'inventory-weapons');
+      character[key].forEach(text => {
+        // Free-text entries use “Name : description”; only show the name here.
+        const name = text.split(/[:：]/, 1)[0].trim();
+        const item = el('li');
+        item.append(el('span', name || 'Sans nom'));
+        item.setAttribute('title', name || 'Sans nom');
+        list.append(item);
+      });
+      if (character[key].length > 2) {
+        list.classList.toggle('inventory-scroll', true);
+        list.tabIndex = 0;
+        list.setAttribute('aria-label', label + ' — liste défilante');
+      }
+      box.append(list);
+    }
+    target.append(box);
+  }
+}
 // --- Read-only preview ---
 // Preview uses text nodes only: imported content cannot execute as HTML.
 function renderPreview() {
+  renderInventory('view');
   $('view-name').textContent = character.name.trim() ? character.name : '—';
   $('view-archetype').textContent = character.archetype.trim() ? character.archetype : '—';
+  $('view-credits').textContent = character.credits;
+  $('view-debts').textContent = character.debts;
   $('view-physicalDescription').textContent = character.physicalDescription.trim()
     ? character.physicalDescription : '—';
   $('viewAnarchy').textContent = character.anarchyPoints + ' / ' + MAX_ANARCHY;
   $('viewAnarchy').className = 'anarchy-value';
+  $('viewHumanity').textContent = character.humanity.current + ' / ' + character.humanity.max;
+  $('viewHumanity').className = 'anarchy-value';
+  $('viewAnarchyMeter').replaceChildren();
+  for (let i = 0; i < MAX_ANARCHY; i++) $('viewAnarchyMeter').append(el('span', '', i < character.anarchyPoints ? 'filled' : ''));
+  const fill = el('span', '', 'filled');
+  fill.setAttribute('style', 'width:' + (character.humanity.max > 0 ? Math.max(0, Math.min(100, character.humanity.current / character.humanity.max * 100)) : 0) + '%');
+  $('viewHumanityMeter').replaceChildren(fill);
+  $('viewHumanityMeter').classList.toggle('danger', character.humanity.current < 10);
+  updateHumanityWarnings();
   $('viewStats').replaceChildren();
   Object.keys(attributes).forEach(name => {
     const block = el('div'),
@@ -954,6 +1219,7 @@ function renderPreview() {
     });
     target.append(list);
   }
+  renderWeapons(false);
   $('viewWounds').replaceChildren();
   woundTypes.forEach(type => {
     const row = el('div', '', 'wound-row');
@@ -964,24 +1230,28 @@ function renderPreview() {
   previewStale = false;
 }
 // --- Tab navigation ---
-const tabs = [$('previewTab'), $('editTab'), $('missionsTab'), $('diceTab')];
+const tabs = [$('previewTab'), $('cyberwareTab'), $('editTab'), $('missionsTab'), $('diceTab'), $('debugTab')];
 function showTab(index) {
+  if (!tabs[index] || tabs[index].hidden) return;
   tabs.forEach((tab, i) => {
     tab.setAttribute('aria-selected', String(i === index));
     tab.tabIndex = i === index ? 0 : -1;
     $(tab.getAttribute('aria-controls')).hidden = i !== index;
   });
-  if (index === 3) refreshDice();
+  if (tabs[index].id === 'diceTab') refreshDice();
+  if (tabs[index].id === 'cyberwareTab') updateCyberHumanity();
   if (index === 0 && previewStale) renderPreview();
 }
 tabs.forEach((tab, index) => {
   tab.onclick = () => showTab(index);
   tab.onkeydown = event => {
+    const visible = tabs.filter(item => !item.hidden);
+    const position = visible.indexOf(tab);
     let next;
-    if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-    if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
-    if (event.key === 'Home') next = 0;
-    if (event.key === 'End') next = tabs.length - 1;
+    if (event.key === 'ArrowRight') next = tabs.indexOf(visible[(position + 1) % visible.length]);
+    if (event.key === 'ArrowLeft') next = tabs.indexOf(visible[(position + visible.length - 1) % visible.length]);
+    if (event.key === 'Home') next = tabs.indexOf(visible[0]);
+    if (event.key === 'End') next = tabs.indexOf(visible[visible.length - 1]);
     if (next !== undefined) {
       event.preventDefault();
       showTab(next);
@@ -989,6 +1259,269 @@ tabs.forEach((tab, index) => {
     }
   };
 });
+// Debug controls live outside the character object and survive panel imports.
+$('showCyberware').onchange = () => {
+  const enabled = $('showCyberware').checked;
+  $('cyberwareTab').hidden = !enabled;
+  if (!enabled && $('cyberwareTab').getAttribute('aria-selected') === 'true') showTab(5);
+};
+// Vector skeleton: four independent regions share one coordinate system.
+function skeletonNode(tag, attributes = {}) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+  return node;
+}
+function skeletonRegion(part) {
+  const group = skeletonNode('g', {class: 'cyber-region cyber-region-' + part, role: 'button', tabindex: 0});
+  const path = (d, parent = group) => parent.append(skeletonNode('path', {d, class: 'bone'}));
+  const rect = (x,y,width,height,parent = group) => parent.append(skeletonNode('rect', {x,y,width,height,class:'bone'}));
+  const joint = (x,y,parent = group) => {
+    parent.append(skeletonNode('circle', {cx:x,cy:y,r:8,class:'bone'}));
+    parent.append(skeletonNode('circle', {cx:x,cy:y,r:3.5,class:'bone'}));
+  };
+  const marker = (x,y) => group.append(skeletonNode('rect', {x,y,width:5,height:5,class:'implant-marker'}));
+  const hits = {
+    head: 'M86 6 H154 V91 H86 Z',
+    body: 'M68 92 H172 L163 186 V256 L145 278 H95 L77 256 V186 Z',
+    arms: 'M63 91 L80 108 L57 202 L36 279 L36 335 H5 V280 L37 195 L48 110 Z M177 91 L160 108 L183 202 L204 279 V335 H235 V280 L203 195 L192 110 Z',
+    legs: 'M84 274 H156 L160 374 L151 528 L172 586 H126 L120 534 L114 586 H68 L89 528 L80 374 Z'
+  };
+  group.append(skeletonNode('path', {d:hits[part],class:'hit-area'}));
+  if (part === 'head') {
+    path('M109 12 H131 L145 26 V48 L140 51 V60 L134 65 V75 L126 82 H114 L106 75 V65 L100 60 V51 L95 48 V26 Z');
+    path('M100 27 L111 37 H119 L124 42 H133 L140 33 M116 55 L120 47 L124 55 Z');
+    rect(103,43,11,8); rect(126,43,11,8); rect(110,64,20,8);
+    for (let x=114;x<130;x+=4) path('M'+x+' 64 V72');
+    path('M110 68 H130');rect(114,86,12,6);marker(133,26);
+  }
+  if (part === 'body') {
+    path('M113 98 H104 L98 104 H79 L66 111 M127 98 H136 L142 104 H161 L174 111 M70 117 H102 L113 126 M170 117 H138 L127 126');
+    path('M116 116 H124 L128 130 L126 167 L120 192 L114 167 L112 130 Z');
+    for (let i=0;i<5;i++) {
+      const y=128+i*14;
+      path('M112 '+y+' L96 '+(y+2)+' L82 '+(y-9)+' L77 '+(y+3)+' L88 '+(y+13)+' H101 L114 '+(y+9));
+      path('M128 '+y+' L144 '+(y+2)+' L158 '+(y-9)+' L163 '+(y+3)+' L152 '+(y+13)+' H139 L126 '+(y+9));
+    }
+    for(let y=96;y<=248;y+=13) { if(y>182 || y<116) rect(114,y,12,7); }
+    path('M104 208 V221 L97 227 V242 M136 208 V221 L143 227 V242 M99 242 L90 233 H79 L74 241 V253 L85 264 V272 L99 282 H110 L120 276 L130 282 H141 L155 272 V264 L166 253 V241 L161 233 H150 L141 242 L128 247 H112 Z');
+    path('M95 252 H103 L113 261 V271 H103 L95 263 Z M145 252 H137 L127 261 V271 H137 L145 263 Z M120 248 V276');
+    marker(117,140);marker(117,216);
+  }
+  if (part === 'arms' || part === 'legs') {
+    for(const mirror of [false,true]) {
+      const side=skeletonNode('g', mirror ? {transform:'translate(240 0) scale(-1 1)'} : {});
+      group.append(side);
+      if(part === 'arms') {
+        joint(62,112,side);
+        path('M56 120 L43 176 L39 186 M67 120 L58 177 L51 190 M60 124 L49 181',side);
+        joint(43,195,side);
+        path('M37 201 L27 242 L15 283 M49 202 L44 225 L23 283 M41 207 L20 280',side);
+        path('M14 282 H25 L29 289 V296 H10 V289 Z M10 299 H29 L35 310 L30 313 L25 305 M11 300 L5 312 L9 315 L15 305',side);
+        for(let i=0;i<4;i++) { const x=12+i*5;path('M'+x+' 301 L'+(x-2)+' 316 V326 H'+(x+1)+' V317 L'+(x+2)+' 302',side); }
+      } else {
+        joint(92,278,side);
+        path('M86 286 L87 330 L91 374 M98 286 L101 331 L99 374 M91 289 L96 371 M91 374 L84 385 V391 H91 M99 374 L106 385 V391 H100',side);
+        joint(96,394,side);
+        path('M88 401 L84 410 L87 419 L81 433 V470 L87 486 L89 526 M104 401 L107 410 L103 419 V472 L99 486 L98 526 M94 406 V526',side);
+        rect(86,528,16,9,side);
+        path('M88 541 H100 L105 553 L102 560 H80 Z M80 560 L72 576 H101 V560 M80 568 H101',side);
+        for(let i=0;i<4;i++) {const x=74+i*7;path('M'+x+' 576 L'+(x-1)+' 585 H'+(x+3)+' L'+(x+5)+' 576',side);}
+      }
+    }
+    if(part === 'arms') {marker(45,159);marker(190,159);}
+    else {marker(93,324);marker(142,324);}
+  }
+  return group;
+}
+// --- Installed cyberware; saved Humanity already includes its costs. ---
+function updateHumanityWarnings() {
+  const {current} = character.humanity;
+  const imminent = current <= 0;
+  const danger = current < 10;
+  for (const id of ['viewHumanity', 'editHumanity', 'cyberHumanity']) {
+    const value = $(id);
+    if (value) value.classList.toggle('humanity-danger', danger);
+  }
+  const banner = $('cyberDangerBanner');
+  if (banner) {
+    banner.hidden = !danger;
+    const message = !danger ? '' : imminent ? 'DANGER: CYBERPSYCHOSE IMMINENTE' : 'DANGER: CYBERPSYCHOSE POSSIBLE';
+    if (banner.textContent !== message) banner.textContent = message;
+  }
+}
+function updateCyberHumanity() {
+  $('cyberHumanity').textContent = character.humanity.current + ' / ' + character.humanity.max;
+  const ratio = character.humanity.max > 0 ? character.humanity.current / character.humanity.max : 0;
+  $('cyberHumanityMeter').value = Math.max(0, Math.min(100, ratio * 100));
+  updateHumanityWarnings();
+  $('cyberImplantTotal').textContent = Object.values(character.cyberware).reduce((sum, list) => sum + list.length, 0) + ' implants';
+}
+function renderCyberware() {
+  const panel = $('cyberware');
+  panel.replaceChildren();
+  const header = el('section', '', 'cyber-summary');
+  const humanity = el('div', '', 'anarchy-value');
+  humanity.id = 'cyberHumanity';
+  const resource = el('div');
+  const meter = el('progress');
+  meter.id = 'cyberHumanityMeter'; meter.max = 100;
+  meter.setAttribute('aria-label', 'Humanity restante');
+  resource.append(el('h2', 'Humanity'), humanity, meter);
+  const total = el('p', '', 'dim'); total.id = 'cyberImplantTotal';
+  header.append(resource, total);
+  const banner = el('div', '', 'cyber-danger-banner');
+  banner.id = 'cyberDangerBanner';
+  banner.setAttribute('role', 'alert');
+  banner.hidden = true;
+  panel.append(banner, header);
+  updateCyberHumanity();
+  const layout = el('div', '', 'cyber-layout');
+  const map = el('div', '', 'cyber-map');
+  const silhouette = el('div', '', 'cyber-silhouette');
+  const skeleton = skeletonNode('svg', {viewBox: '0 0 240 600', class: 'cyber-skeleton', role: 'group', 'aria-label': 'Squelette cybernétique — sélectionner une zone'});
+  silhouette.append(skeleton);
+  const nav = el('div', '', 'cyber-nav');
+  const grid = el('div', '', 'cyber-grid');
+  const regionButtons = {}, navigation = {}, sections = {};
+  function selectRegion(selected) {
+    for (const part of Object.keys(CYBER_PARTS)) {
+      sections[part].hidden = part !== selected;
+      regionButtons[part].setAttribute('aria-pressed', String(part === selected));
+      navigation[part].setAttribute('aria-pressed', String(part === selected));
+    }
+  }
+  for (const [part, title] of Object.entries(CYBER_PARTS)) {
+    const region = skeletonRegion(part);
+    region.setAttribute('aria-label', title);
+    region.setAttribute('aria-controls', 'cyber-section-' + part);
+    region.onclick = () => selectRegion(part);
+    region.onkeydown = event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectRegion(part); }
+    };
+    regionButtons[part] = region;
+    skeleton.append(region);
+    const button = el('button', title);
+    button.type = 'button'; button.id = 'cyber-select-' + part;
+    button.setAttribute('aria-controls', 'cyber-section-' + part);
+    const badge = el('span', '0', 'cyber-badge'); badge.id = 'cyber-count-' + part;
+    button.append(badge); button.onclick = () => selectRegion(part);
+    navigation[part] = button; nav.append(button);
+  }
+  map.append(el('p', 'Sélectionnez une zone', 'dim'), silhouette, nav);
+  layout.append(map, grid);
+  panel.append(layout);
+  for (const [part, title] of Object.entries(CYBER_PARTS)) {
+    const section = el('section');
+    section.id = 'cyber-section-' + part;
+    sections[part] = section;
+    const heading = el('div', '', 'cyber-section-heading');
+    heading.append(el('h2', title), el('span', 'IMPLANTS INSTALLÉS', 'dim'));
+    section.append(heading);
+    const list = el('div');
+    list.id = 'cyber-list-' + part;
+    section.append(list);
+    const form = el('div', '', 'cyber-form');
+    form.append(el('h3', '+ NOUVEL IMPLANT'));
+    const fields = {};
+    for (const [key, caption, type] of [
+      ['name', 'Cyberware', 'text'], ['description', 'Description', 'textarea'],
+      ['humanityCost', 'Coût Humanity', 'number'], ['resellPrice', 'Prix de revente', 'number']
+    ]) {
+      const label = el('label', caption);
+      const input = el(type === 'textarea' ? 'textarea' : 'input');
+      input.id = 'cyber-' + part + '-' + key;
+      label.htmlFor = input.id;
+      if (type !== 'textarea') input.type = type;
+      if (type === 'number') { input.min = 0; input.step = 1; input.value = '0'; }
+      else { input.maxLength = key === 'name' ? MAX_NAME : MAX_DESCRIPTION; input.value = ''; }
+      fields[key] = input;
+      label.append(input);
+      form.append(label);
+    }
+    const error = el('p', '', 'error');
+    error.id = 'cyber-error-' + part;
+    error.setAttribute('role', 'alert');
+    const install = el('button', '[ + installer ]');
+    install.id = 'cyber-install-' + part;
+    install.type = 'button';
+    function refreshList() {
+      list.replaceChildren();
+      const implants = character.cyberware[part];
+      $('cyber-count-' + part).textContent = String(implants.length);
+      regionButtons[part].classList.toggle('installed', implants.length > 0);
+      if (!implants.length) list.append(el('p', 'Aucun implant installé dans cette zone.', 'cyber-empty'));
+      implants.forEach(implant => {
+        const row = el('div', '', 'cyber-item');
+        const metrics = el('div', '', 'cyber-metrics');
+        metrics.append(el('span', 'Humanity −' + implant.humanityCost), el('span', 'Revente ' + implant.resellPrice));
+        row.append(el('strong', implant.name), el('p', implant.description), metrics);
+        const remove = el('button', '[ retirer ]');
+        remove.type = 'button';
+        remove.setAttribute('aria-label', 'Retirer ' + implant.name);
+        const confirmation = el('div', '', 'cyber-confirm');
+        confirmation.hidden = true;
+        const accept = el('button', '[ confirmer le retrait ]', 'cyber-confirm-remove');
+        const cancel = el('button', '[ annuler ]', 'cyber-cancel-remove');
+        accept.type = cancel.type = 'button';
+        confirmation.append(el('p', 'Retirer cet implant et restituer son coût en Humanity ?'), accept, cancel);
+        remove.onclick = () => {
+          remove.hidden = true;
+          confirmation.hidden = false;
+          cancel.focus();
+        };
+        cancel.onclick = () => {
+          confirmation.hidden = true;
+          remove.hidden = false;
+          remove.focus();
+        };
+        accept.onclick = () => {
+          // Look up the item again so an obsolete handler cannot refund twice.
+          const position = implants.indexOf(implant);
+          if (position === -1) return;
+          character.humanity.current = Math.min(character.humanity.max, character.humanity.current + implant.humanityCost);
+          implants.splice(position, 1);
+          refreshList();
+          renderHumanity();
+          updateCyberHumanity();
+          edit();
+          const next = list.querySelector('button');
+          (next || install).focus();
+        };
+        row.append(remove, confirmation);
+        list.append(row);
+      });
+      install.disabled = implants.length >= MAX_CYBERWARE;
+      error.textContent = install.disabled ? 'Limite atteinte : 25 implants par partie.' : '';
+    }
+    install.onclick = () => {
+      if (character.cyberware[part].length >= MAX_CYBERWARE) return;
+      const implant = {name: fields.name.value.trim(), description: fields.description.value,
+        humanityCost: Number(fields.humanityCost.value), resellPrice: Number(fields.resellPrice.value)};
+      const next = character.humanity.current - implant.humanityCost;
+      if (!implant.name || implant.name.length > MAX_NAME || /[\r\n]/.test(implant.name) ||
+          implant.description.length > MAX_DESCRIPTION || !fields.humanityCost.value.trim() ||
+          !fields.resellPrice.value.trim() || !integer(implant.humanityCost) || !integer(implant.resellPrice) ||
+          !Number.isSafeInteger(next) || !integer(Math.abs(next))) {
+        error.textContent = 'Nom requis (120 caractères), description de 2 000 caractères maximum et coûts entiers positifs ou nuls. Humanity doit rester dans les limites autorisées.';
+        return;
+      }
+      character.cyberware[part].push(implant);
+      character.humanity.current = next;
+      fields.name.value = ''; fields.description.value = '';
+      fields.humanityCost.value = '0'; fields.resellPrice.value = '0';
+      refreshList();
+      renderHumanity();
+      updateCyberHumanity();
+      edit();
+    };
+    form.append(install, error);
+    section.append(form);
+    grid.append(section);
+    refreshList();
+  }
+  selectRegion('head');
+  panel.append(el('p', 'Installer déduit le coût en Humanity. Retirer le restitue, sans dépasser le maximum. Le prix de revente est indicatif : aucun crédit automatique.', 'dim'));
+}
 // --- Dice roller: temporary play state, never part of character JSON. ---
 const MAX_DICE = 1000;
 const MAX_ROLL_HISTORY = 100;
@@ -1078,7 +1611,7 @@ function updateDicePool() {
 function scoreDie(face, risk, state) {
   const threshold = state === 'advantage' ? 4 : state === 'disadvantage' ? 6 : 5;
   const riskThreshold = state === 'advantage' ? 4 : 5;
-  return {successes: risk ? (face >= riskThreshold ? 2 : 0) : (face >= threshold ? 1 : 0), glitch: risk && face <= 2};
+  return {successes: risk ? (face >= riskThreshold ? 2 : 0) : (face >= threshold ? 1 : 0), glitch: risk && face === 1};
 }
 function bindDiceControls() {
   $('diceMode').onchange = updateDicePool;
@@ -1233,18 +1766,86 @@ function renderStats() {
     $('editStats').append(row);
   });
 }
-// Numeric controls reject invalid edits and enforce resource limits.
-function numericInput(object, key, label, max = Number.MAX_SAFE_INTEGER - 10, onUpdate = () => {}) {
+// The adjustment is temporary; only the resulting balances enter character JSON.
+function creditAdjustment() {
+  const box = el('div', '', 'credit-adjustment');
+  const label = el('label', 'Différence', 'profile-label');
+  const input = el('input');
+  input.id = 'creditDelta';
+  input.type = 'number';
+  input.step = 1;
+  input.value = '0';
+  label.htmlFor = input.id;
+  const apply = el('button', '[ appliquer ]');
+  apply.id = 'applyCreditDelta';
+  apply.type = 'button';
+  apply.onclick = () => {
+    const delta = Number(input.value);
+    const balance = character.credits + delta;
+    const debt = character.debts + Math.min(0, balance);
+    if (input.value.trim() === '' || !integer(Math.abs(delta)) ||
+        !integer(Math.abs(balance)) || !integer(-debt)) {
+      input.setAttribute('aria-invalid', 'true');
+      status('différence invalide — saisissez un entier dans les limites autorisées', true);
+      return;
+    }
+    input.setAttribute('aria-invalid', 'false');
+    character.credits = Math.max(0, balance);
+    character.debts = debt;
+    $('edit-credits').value = String(character.credits);
+    $('edit-debts').value = String(character.debts);
+    input.value = '0';
+    if (delta !== 0) edit();
+  };
+  input.onkeydown = event => {
+    if (event.key === 'Enter') { event.preventDefault(); apply.onclick(); }
+  };
+  box.append(label, input, apply);
+  return box;
+}
+// Commit money on blur/change so typing -100 transfers the deficit only once.
+function moneyInput(key) {
   const input = el('input');
   input.type = 'number';
-  input.min = 0;
+  input.step = 1;
+  input.value = character[key];
+  const commit = () => {
+    const value = Number(input.value);
+    const valid = input.value.trim() !== '' && integer(Math.abs(value));
+    const debt = key === 'credits' && value < 0 ? character.debts + value : -Math.abs(value);
+    if (!valid || (key === 'credits' && value < 0 && !integer(-debt))) {
+      input.value = character[key];
+      status('montant invalide — dernière valeur conservée', true);
+      return;
+    }
+    const credits = key === 'credits' ? Math.max(0, value) : character.credits;
+    const debts = key === 'debts' || value < 0 ? debt : character.debts;
+    const modified = credits !== character.credits || debts !== character.debts;
+    character.credits = credits;
+    character.debts = debts === 0 ? 0 : debts;
+    $('edit-credits').value = String(character.credits);
+    $('edit-debts').value = String(character.debts);
+    if (modified) edit();
+  };
+  input.onchange = commit;
+  input.onblur = commit;
+  input.onkeydown = event => {
+    if (event.key === 'Enter') { event.preventDefault(); commit(); }
+  };
+  return input;
+}
+// Numeric controls reject invalid edits and enforce resource limits.
+function numericInput(object, key, label, max = Number.MAX_SAFE_INTEGER - 10, onUpdate = () => {}, min = 0) {
+  const input = el('input');
+  input.type = 'number';
+  input.min = min;
   input.step = 1;
   input.max = max;
   input.value = object[key];
   input.setAttribute('aria-label', label);
   input.oninput = () => {
     const value = Number(input.value);
-    const valid = input.value.trim() !== '' && Number.isSafeInteger(value) && value >= 0 && value <= max;
+    const valid = input.value.trim() !== '' && Number.isSafeInteger(value) && value >= min && value <= max;
     input.setAttribute('aria-invalid', String(!valid));
     if (valid) {
       object[key] = value;
@@ -1262,20 +1863,20 @@ function numericInput(object, key, label, max = Number.MAX_SAFE_INTEGER - 10, on
   };
   return input;
 }
-function counter(object, key, label, max = Number.MAX_SAFE_INTEGER - 10) {
+function counter(object, key, label, max = Number.MAX_SAFE_INTEGER - 10, min = 0) {
   const wrapper = el('div', '', 'counter'),
     minus = el('button', '−'),
     plus = el('button', '+');
   function updateButtons() {
-    minus.disabled = object[key] <= 0;
+    minus.disabled = object[key] <= min;
     plus.disabled = object[key] >= max;
   }
-  const input = numericInput(object, key, label, max, updateButtons);
+  const input = numericInput(object, key, label, max, updateButtons, min);
   for (const [button, delta] of [[minus, -1], [plus, 1]]) {
     button.setAttribute('aria-label', (delta < 0 ? 'Diminuer ' : 'Augmenter ') + label);
     button.onclick = () => {
       const next = object[key] + delta;
-      if (!Number.isSafeInteger(next) || next < 0 || next > max) return;
+      if (!Number.isSafeInteger(next) || next < min || next > max) return;
       object[key] = next;
       input.value = next;
       input.setAttribute('aria-invalid', 'false');
@@ -1380,6 +1981,81 @@ function renderSkills() {
   });
   rdUpdates.forEach(update => update());
 }
+// Final damage is derived, so changing a characteristic never leaves stale JSON totals.
+function weaponDamage(weapon) {
+  return weapon.baseDamage + (weapon.attribute === null ? 0 : character.stats[weapon.attribute]);
+}
+function updateWeaponDamage() {
+  const outputs = $('editweapons').querySelectorAll('output');
+  character.weapons.forEach((weapon, index) => {
+    if (outputs[index]) outputs[index].textContent = weaponDamage(weapon);
+  });
+}
+function renderWeapons(editable = true) {
+  const target = $((editable ? 'edit' : 'view') + 'weapons');
+  target.replaceChildren();
+  if (editable) {
+    $('weaponsCount').textContent = '[' + character.weapons.length + ' / ' + MAX_LINES + ']';
+    $('weaponsAdd').disabled = character.weapons.length >= MAX_LINES;
+  } else if (!character.weapons.length) target.append(el('p', 'Aucune arme.', 'dim'));
+  character.weapons.forEach((weapon, index) => {
+    const row = el('div', '', 'weapon-row');
+    const label = 'Arme ' + (index + 1);
+    if (editable) {
+      const name = el('input');
+      name.type = 'text';
+      name.maxLength = MAX_TEXT;
+      name.value = weapon.name;
+      name.placeholder = 'Nom de l’arme';
+      name.setAttribute('aria-label', label);
+      name.oninput = () => { weapon.name = name.value; edit(); };
+      const select = el('select');
+      select.setAttribute('aria-label', 'Caractéristique — ' + label);
+      const none = el('option', 'Aucune');
+      none.value = '';
+      select.append(none);
+      Object.keys(attributes).forEach(key => {
+        const option = el('option', key);
+        option.value = key;
+        select.append(option);
+      });
+      select.value = weapon.attribute || '';
+      select.onchange = () => { weapon.attribute = select.value || null; edit(true); };
+      const remove = el('button', '×', 'remove');
+      remove.setAttribute('aria-label', 'Supprimer ' + label);
+      remove.onclick = () => {
+        character.weapons.splice(index, 1);
+        renderWeapons();
+        edit();
+        $('weaponsAdd').focus();
+      };
+      row.append(name, cell('VD de Base', numericInput(weapon, 'baseDamage', 'VD de Base — ' + label,
+        Number.MAX_SAFE_INTEGER - 10, updateWeaponDamage, 1)), cell('Caractéristique', select),
+        cell('VD final', el('output', weaponDamage(weapon), 'readout value')), remove);
+    } else {
+      row.className = 'weapon-card';
+      const heading = el('div', '', 'weapon-card-head');
+      heading.append(el('span', '[ ' + String(index + 1).padStart(2, '0') + ' ]', 'weapon-id'),
+        el('h3', weapon.name || 'Sans nom'));
+      const body = el('div', '', 'weapon-card-body');
+      const details = el('div', '', 'weapon-details');
+      const bonus = weapon.attribute === null ? 0 : character.stats[weapon.attribute];
+      for (const [label, value] of [['VD de Base', weapon.baseDamage],
+          ['Caractéristique', weapon.attribute === null ? 'Aucune' : weapon.attribute + ' +' + bonus]]) {
+        const detail = el('div', '', 'weapon-detail');
+        detail.append(el('span', label), el('strong', value));
+        details.append(detail);
+      }
+      const total = el('div', '', 'weapon-total');
+      total.append(el('span', 'VD FINAL'), el('strong', weaponDamage(weapon)));
+      body.append(details, total);
+      const formula = weapon.baseDamage + ' base + ' + bonus +
+        (weapon.attribute === null ? '' : ' ' + weapon.attribute) + ' = ' + weaponDamage(weapon);
+      row.append(heading, body, el('div', formula, 'weapon-equation'));
+    }
+    target.append(row);
+  });
+}
 function renderList(key) {
   const target = $('edit' + key);
   target.replaceChildren();
@@ -1427,20 +2103,58 @@ function renderWounds() {
     $('editWounds').append(row);
   });
 }
+// Humanity shares the Anarchy control style, with a signed value and editable cap.
+function renderHumanity() {
+  const container = $('editHumanity');
+  container.className = 'anarchy-controls';
+  const current = counter(character.humanity, 'current', 'Humanity', character.humanity.max, -(Number.MAX_SAFE_INTEGER - 10));
+  current.querySelector('input').id = 'humanityCurrent';
+  const maximumRow = el('div', '', 'humanity-maximum');
+  const label = el('label', '/ Max');
+  const maximum = el('input');
+  maximum.id = 'humanityMax';
+  maximum.type = 'number';
+  maximum.step = 1;
+  maximum.value = String(character.humanity.max);
+  label.htmlFor = maximum.id;
+  maximum.onchange = () => {
+    const value = Number(maximum.value);
+    if (maximum.value.trim() === '' || !Number.isSafeInteger(value) || !integer(Math.abs(value))) {
+      maximum.value = String(character.humanity.max);
+      status('maximum Humanity invalide — dernière valeur conservée', true);
+      return;
+    }
+    character.humanity.max = value;
+    character.humanity.current = Math.min(character.humanity.current, value);
+    renderHumanity();
+    edit();
+  };
+  maximumRow.append(label, maximum);
+  container.replaceChildren(current, maximumRow);
+  updateHumanityWarnings();
+}
 function render() {
   $('edit-name').value = character.name;
   $('edit-archetype').value = character.archetype;
+  $('creditDelta').value = '0';
+  $('creditDelta').setAttribute('aria-invalid', 'false');
+  $('edit-credits').value = character.credits;
+  $('edit-debts').value = character.debts;
   $('edit-physicalDescription').value = character.physicalDescription;
   const anarchy = $('editAnarchy');
   anarchy.className = 'anarchy-controls';
   anarchy.replaceChildren(counter(character, 'anarchyPoints', 'Points d’Anarchy', MAX_ANARCHY), el('span', '/ ' + MAX_ANARCHY, 'limit'));
+  renderHumanity();
   renderStats();
   renderSkills();
+  renderWeapons();
+  renderInventory('edit');
   renderList('atouts');
   renderList('equipment');
   renderWounds();
   $('notes').value = character.notes;
   renderMissions();
+  renderCyberware();
   renderPreview();
   $('dirty').textContent = changed ? '*' : '';
 }
@@ -1487,8 +2201,17 @@ function validate(data) {
   if (data?.schema === 'character-sheet' && data.version === 1 && !Object.hasOwn(data, 'archetype')) {
     data = {...data, archetype: ''};
   }
-  if (!exactKeys(data, ['schema', 'version', 'missions', 'name', 'archetype', 'physicalDescription',
-      'anarchyPoints', 'stats', 'skills', 'atouts', 'equipment', 'wounds', 'notes']) ||
+  // Money fields are optional in older Version 1 files.
+  if (data?.schema === 'character-sheet' && data.version === 1) {
+    data = {...data};
+    if (!Object.hasOwn(data, 'weapons')) data.weapons = [];
+    if (!Object.hasOwn(data, 'credits')) data.credits = 0;
+    if (!Object.hasOwn(data, 'debts')) data.debts = 0;
+    if (!Object.hasOwn(data, 'humanity')) data.humanity = {current: 100, max: 100};
+    if (!Object.hasOwn(data, 'cyberware')) data.cyberware = {head: [], arms: [], body: [], legs: []};
+  }
+  if (!exactKeys(data, ['schema', 'version', 'missions', 'name', 'archetype', 'credits', 'debts', 'humanity', 'cyberware', 'physicalDescription',
+      'anarchyPoints', 'stats', 'skills', 'atouts', 'weapons', 'equipment', 'wounds', 'notes']) ||
       data.schema !== 'character-sheet' || data.version !== 1) {
     throw new Error('Version 1 du Character sheet JSON requise, ou ancien prototype v4 à v8');
   }
@@ -1505,11 +2228,32 @@ function validate(data) {
   if (typeof data.name !== 'string' || data.name.length > MAX_NAME || /[\r\n]/.test(data.name)) {
     throw new Error('Name invalide : une ligne de 120 caractères maximum');
   }
+  if (!integer(data.credits) || typeof data.debts !== 'number' || data.debts > 0 || !integer(-data.debts)) {
+    throw new Error('Montants invalides : Credits entier positif ou nul ; Dettes entier négatif ou nul');
+  }
   if (typeof data.archetype !== 'string' || data.archetype.length > MAX_NAME || /[\r\n]/.test(data.archetype)) {
     throw new Error('Archétype invalide : une ligne de 120 caractères maximum');
   }
   if (typeof data.physicalDescription !== 'string' || data.physicalDescription.length > MAX_DESCRIPTION) {
     throw new Error('Description physique invalide : 2 000 caractères maximum');
+  }
+  if (!exactKeys(data.cyberware, Object.keys(CYBER_PARTS))) throw new Error('Parties cyberware invalides');
+  for (const implants of Object.values(data.cyberware)) {
+    if (!Array.isArray(implants) || implants.length > MAX_CYBERWARE) throw new Error('25 implants maximum par partie');
+    for (const implant of implants) {
+      if (!exactKeys(implant, ['name', 'description', 'humanityCost', 'resellPrice']) ||
+          !shortText(implant.name) || !implant.name.trim() || /[\r\n]/.test(implant.name) ||
+          typeof implant.description !== 'string' || implant.description.length > MAX_DESCRIPTION ||
+          !integer(implant.humanityCost) || !integer(implant.resellPrice)) {
+        throw new Error('Cyberware invalide : nom, description et coûts entiers positifs ou nuls requis');
+      }
+    }
+  }
+  if (!exactKeys(data.humanity, ['current', 'max']) ||
+      !Number.isSafeInteger(data.humanity.current) || !integer(Math.abs(data.humanity.current)) ||
+      !Number.isSafeInteger(data.humanity.max) || !integer(Math.abs(data.humanity.max)) ||
+      data.humanity.current > data.humanity.max) {
+    throw new Error('Humanity invalide : entiers requis, valeur inférieure ou égale au maximum');
   }
   if (!integer(data.anarchyPoints) || data.anarchyPoints > 3) throw new Error('Points d’Anarchy invalides : de 0 à 3');
   if (!exactKeys(data.stats, Object.keys(attributes)) ||
@@ -1535,6 +2279,13 @@ function validate(data) {
         !attribute(spec.attribute) ||
         !integer(spec.rr))
       throw new Error('spécialisation invalide');
+  }
+  if (!Array.isArray(data.weapons) || data.weapons.length > MAX_LINES ||
+      data.weapons.some(weapon => !exactKeys(weapon, ['name', 'baseDamage', 'attribute']) ||
+        !shortText(weapon.name) || /[\r\n]/.test(weapon.name) ||
+        !integer(weapon.baseDamage) || weapon.baseDamage < 1 ||
+        (weapon.attribute !== null && !attribute(weapon.attribute)))) {
+    throw new Error('Armes invalides : 10 maximum, VD de Base entier positif et caractéristique valide ou aucune');
   }
   for (const key of ['atouts', 'equipment']) if (!Array.isArray(data[key]) ||
       data[key].length > MAX_LINES ||
@@ -1593,6 +2344,7 @@ function prepareImportedSheet(candidate) {
   };
   const root = document.createElement('div');
   const preview = $('preview').cloneNode(false);
+  const cyberware = $('cyberware').cloneNode(false);
   const editor = $('editor').cloneNode(false);
   const missions = $('missions').cloneNode(false);
   const dice = $('dice').cloneNode(true);
@@ -1602,7 +2354,7 @@ function prepareImportedSheet(candidate) {
   }
   const dirty = el('span');
   dirty.id = 'dirty';
-  root.append(preview, editor, missions, dice, dirty);
+  root.append(preview, cyberware, editor, missions, dice, dirty);
   try {
     renderRoot = root;
     character = candidate;
@@ -1614,6 +2366,7 @@ function prepareImportedSheet(candidate) {
     refreshDice(true);
     return {
       preview,
+      cyberware,
       editor,
       missions,
       dice,
@@ -1630,7 +2383,7 @@ function prepareImportedSheet(candidate) {
 function applyImportedSheet(candidate) {
   const prepared = prepareImportedSheet(candidate);
   // One DOM replacement commits the fully constructed views.
-  $('sheetViews').replaceChildren(prepared.preview, prepared.editor, prepared.missions, prepared.dice);
+  $('sheetViews').replaceChildren(prepared.preview, prepared.cyberware, prepared.editor, prepared.missions, prepared.dice);
   character = candidate;
   changed = false;
   rdUpdates = prepared.updates;
@@ -1673,7 +2426,7 @@ $('file').onchange = async event => {
   const attempt = ++importAttempt;
   event.target.value = '';
   hideFileError();
-  let candidate;
+  let candidate, importedSource;
   try {
     if (file.size > MAX_FILE_BYTES) throw new RangeError('Le fichier dépasse la limite de 2 Mo.');
     let text;
@@ -1687,7 +2440,9 @@ $('file').onchange = async event => {
       return;
     }
     if (attempt !== importAttempt) return;
-    candidate = validate(JSON.parse(text));
+    const parsed = JSON.parse(text);
+    importedSource = JSON.stringify(parsed, null, 2);
+    candidate = validate(parsed);
   } catch (error) {
     if (attempt !== importAttempt) return;
     showFileError(error instanceof RangeError ? 'IMPORT REFUSÉ — LIMITE DÉPASSÉE' : 'IMPORT REFUSÉ — FICHIER INVALIDE',
@@ -1707,6 +2462,7 @@ $('file').onchange = async event => {
       'Vous pouvez continuer à utiliser votre fiche actuelle et l’exporter avant de réessayer.');
     return;
   }
+  $('importedJson').textContent = importedSource;
   status('fiche importée');
 };
 // --- Reset and startup ---
@@ -1715,6 +2471,7 @@ $('reset').onclick = () => {
   importAttempt++;
   hideFileError();
   character = defaults();
+  $('importedJson').textContent = JSON.stringify(character, null, 2);
   changed = false;
   render();
   refreshDice(true);
@@ -1732,6 +2489,7 @@ render();
 bindDiceControls();
 clearRollHistory();
 refreshDice();
+$('importedJson').textContent = JSON.stringify(character, null, 2);
 </script>
 </body>
 </html>
